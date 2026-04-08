@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHU Psychro Navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c0e0d; --surf:#111412; --bdr:#1e2620; --bdr-hi:#2c3a2e;
+  --amber:#f0b030; --amber-m:#7a5a10; --amber-bg:rgba(240,176,48,0.09);
+  --green:#40d870; --green-m:#1c5c34; --green-bg:rgba(64,216,112,0.09);
+  --red:#f04848; --red-m:#5c1c1c; --red-bg:rgba(240,72,72,0.09);
+  --blue:#5aabff; --blue-m:#1a4070; --blue-bg:rgba(90,171,255,0.09);
+  --cyan:#30e8d8; --cyan-m:#0a4440; --cyan-bg:rgba(48,232,216,0.09);
+  --orange:#ff8c30; --orange-m:#5a3010; --orange-bg:rgba(255,140,48,0.09);
+  --purple:#b088ff;
+  --hi:#dce8d8; --txt:#a0b09c; --lo:#566052; --xlo:#384038;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--bdr-hi);border-radius:3px;}
+
+/* ── HEADER ── */
+header{background:#090b0a;border-bottom:1px solid var(--bdr);padding:9px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+header h1{font-weight:700;font-size:16px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);white-space:nowrap;}
+header .sub{font-family:var(--mono);font-size:11px;color:var(--lo);}
+.mode-toggle{display:flex;margin-left:auto;border:1px solid var(--bdr-hi);overflow:hidden;}
+.mode-btn{padding:5px 13px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--lo);transition:all .15s;white-space:nowrap;border-right:1px solid var(--bdr-hi);}
+.mode-btn:last-child{border-right:none;}
+.mode-btn.active{background:var(--amber-bg);color:var(--amber);}
+
+/* ── LAYOUT ── */
+.main{display:grid;grid-template-columns:310px 1fr 360px;flex:1;min-height:0;}
+.col{display:flex;flex-direction:column;border-right:1px solid var(--bdr);min-height:0;}
+.col:last-child{border-right:none;}
+.col-head{background:#090b0a;border-bottom:1px solid var(--bdr);padding:8px 16px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;flex-shrink:0;display:flex;align-items:center;gap:8px;}
+.dot-ind{width:7px;height:7px;border-radius:50%;background:var(--bdr-hi);transition:all .3s;flex-shrink:0;}
+.dot-ind.on{background:var(--green);box-shadow:0 0 5px var(--green);}
+.col-body{flex:1;overflow-y:auto;padding:14px 16px;scrollbar-width:thin;}
+
+/* ── SHARED COMPONENTS ── */
+.sec{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--lo);text-transform:uppercase;margin:16px 0 9px;display:flex;align-items:center;gap:8px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
+.sec:first-child{margin-top:2px;}
+.sec-chip{font-family:var(--mono);font-size:9px;letter-spacing:0;text-transform:none;padding:1px 6px;border-radius:2px;}
+.sc-m2{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-m);}
+.sc-opt{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-m);font-size:8px;}
+.ir{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ir label{flex:1;font-size:13px;font-weight:500;color:var(--txt);}
+.ir input[type=number]{width:78px;background:#080a08;border:1px solid var(--bdr-hi);color:var(--hi);font-family:var(--mono);font-size:14px;font-weight:500;padding:6px 10px;text-align:right;outline:none;-moz-appearance:textfield;transition:border-color .15s;}
+.ir input[type=number]::-webkit-inner-spin-button,.ir input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+.ir input:focus{border-color:var(--amber);}
+.ir input.inp-m2:focus{border-color:var(--cyan);}
+.ir input.inp-ret:focus{border-color:var(--orange);}
+.unit{font-family:var(--mono);font-size:11px;color:var(--lo);width:24px;}
+.calc-btn{width:100%;padding:11px 16px;background:var(--amber);border:none;color:#0a0c0a;font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:background .15s;}
+.calc-btn:hover{background:#f8c840;}
+.results{display:none;} .results.on{display:block;}
+.ctable{background:#080a08;border:1px solid var(--bdr);padding:10px 12px;margin:9px 0;font-family:var(--mono);}
+.ct-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid var(--bdr);font-size:12px;}
+.ct-row:last-child{border-bottom:none;}
+.ct-k{color:var(--lo);} .ct-v{font-weight:500;font-size:13px;color:var(--hi);}
+.ct-v.va{color:var(--amber);} .ct-v.vg{color:var(--green);} .ct-v.vr{color:var(--red);} .ct-v.vb{color:var(--blue);} .ct-v.vc{color:var(--cyan);} .ct-v.vo{color:var(--orange);}
+.mcard{border:1px solid var(--bdr-hi);padding:14px 15px;margin:9px 0;position:relative;overflow:hidden;}
+.mcard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
+.mcard.ma::before{background:var(--amber);} .mcard.ma{background:var(--amber-bg);}
+.mcard.mg::before{background:var(--green);}  .mcard.mg{background:var(--green-bg);}
+.mcard.mr::before{background:var(--red);}    .mcard.mr{background:var(--red-bg);}
+.mcard.mb::before{background:var(--blue);}   .mcard.mb{background:var(--blue-bg);}
+.mcard.mc::before{background:var(--cyan);}   .mcard.mc{background:var(--cyan-bg);}
+.mcard.mo::before{background:var(--orange);} .mcard.mo{background:var(--orange-bg);}
+.mc-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--lo);margin-bottom:4px;}
+.mc-big{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1.1;margin-bottom:5px;}
+.mc-big.va{color:var(--amber);} .mc-big.vg{color:var(--green);} .mc-big.vr{color:var(--red);}
+.mc-big.vb{color:var(--blue);} .mc-big.vc{color:var(--cyan);}  .mc-big.vo{color:var(--orange);}
+.mc-exp{font-size:12.5px;line-height:1.6;color:var(--txt);}
+.mc-exp strong{color:var(--hi);font-weight:600;}
+.verdict{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;margin-top:7px;font-weight:500;}
+.verdict.vbad{background:var(--red-bg);color:var(--red);border:1px solid var(--red-m);}
+.verdict.vok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-m);}
+.verdict.vwrn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-m);}
+.cmp{display:flex;align-items:center;gap:8px;margin-top:9px;font-family:var(--mono);}
+.cmp-item{flex:1;background:#080a08;border:1px solid var(--bdr);padding:6px 8px;text-align:center;}
+.cmp-lbl{font-size:9px;color:var(--lo);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;}
+.cmp-num{font-size:18px;font-weight:500;}
+.cmp-num.vb{color:var(--blue);} .cmp-num.vg{color:var(--green);} .cmp-num.vr{color:var(--red);} .cmp-num.vc{color:var(--cyan);}
+.cmp-arr{color:var(--lo);font-size:16px;flex-shrink:0;}
+.sld-wrap{margin-bottom:12px;}
+.sld-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.sld-name{font-size:13px;font-weight:500;color:var(--txt);}
+.sld-val{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--hi);min-width:42px;text-align:right;}
+input[type=range]{width:100%;-webkit-appearance:none;height:3px;background:var(--bdr-hi);outline:none;cursor:pointer;border-radius:2px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;cursor:pointer;transition:transform .1s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
+#valve::-webkit-slider-thumb{background:var(--blue);}
+#fan::-webkit-slider-thumb{background:var(--green);}
+#heater::-webkit-slider-thumb{background:var(--red);}
+.log-btn{width:100%;padding:10px 16px;background:transparent;border:1px solid var(--blue);color:var(--blue);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:all .15s;}
+.log-btn:hover{background:var(--blue);color:#000;}
+.clr-btn{width:100%;padding:7px 16px;background:transparent;border:1px solid var(--bdr-hi);color:var(--lo);font-family:var(--sans);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:5px;transition:all .15s;}
+.clr-btn:hover{border-color:var(--red);color:var(--red);}
+.chart-col{background:var(--bg);padding:10px 12px 6px;display:flex;flex-direction:column;min-height:0;}
+#psychro-chart{flex:1;width:100%;display:block;min-height:0;}
+.legend{display:flex;gap:12px;padding:5px 2px 0;font-family:var(--mono);font-size:9px;color:var(--lo);flex-wrap:wrap;flex-shrink:0;}
+.li{display:flex;align-items:center;gap:4px;}
+.li-line{width:16px;height:2px;} .li-dot{width:8px;height:8px;border-radius:50%;}
+.tab-bar{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.tab-btn{flex:1;padding:8px 6px;text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--lo);background:#090b0a;border:none;border-right:1px solid var(--bdr);transition:all .15s;}
+.tab-btn:last-child{border-right:none;}
+.tab-btn.active{color:var(--amber);background:var(--amber-bg);}
+.tab-pane{display:none;flex:1;overflow-y:auto;padding:14px 16px;scrollbar-width:thin;}
+.tab-pane.active{display:block;}
+.phase-bar{display:flex;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px;}
+.ph{flex:1;padding:8px 4px;text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--xlo);background:#090b09;border-right:1px solid var(--bdr);transition:all .3s;}
+.ph:last-child{border-right:none;}
+.ph.active{background:var(--amber-bg);color:var(--amber);}
+.ph.done{background:var(--green-bg);color:var(--green);}
+.dblk{border-left:3px solid var(--bdr);padding:11px 13px;margin-bottom:10px;background:var(--surf);}
+.dblk.da{border-color:var(--red);background:var(--red-bg);}
+.dblk.dw{border-color:var(--amber);background:var(--amber-bg);}
+.dblk.dg{border-color:var(--green);background:var(--green-bg);}
+.dblk.di{border-color:var(--blue);background:var(--blue-bg);}
+.dblk.dc{border-color:var(--cyan);background:var(--cyan-bg);}
+.dtag{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:7px;font-weight:500;}
+.dtag.ta{color:var(--red);} .dtag.tw{color:var(--amber);} .dtag.tg{color:var(--green);} .dtag.ti{color:var(--blue);} .dtag.tc{color:var(--cyan);}
+.dtitle{font-size:14px;font-weight:700;color:var(--hi);margin-bottom:6px;line-height:1.3;}
+.dtext{font-size:12.5px;line-height:1.65;color:var(--txt);margin-bottom:5px;}
+.dacts{margin-top:7px;}
+.dact{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:12.5px;color:var(--hi);line-height:1.5;}
+.darr{color:var(--amber);font-family:var(--mono);font-size:11px;flex-shrink:0;margin-top:2px;}
+.traj-empty{font-size:12.5px;color:var(--lo);padding:4px 0;line-height:1.6;}
+.te{border:1px solid var(--bdr);padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:all .15s;background:var(--surf);}
+.te:hover{border-color:var(--blue);background:var(--blue-bg);}
+.te.sel{border-color:var(--amber);background:var(--amber-bg);}
+.te-hd{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.te-num{font-family:var(--mono);font-size:10px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-m);padding:1px 7px;font-weight:500;}
+.te-main{font-family:var(--mono);font-size:13px;color:var(--hi);font-weight:500;}
+.te-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin:6px 0;font-family:var(--mono);font-size:11px;}
+.te-k{color:var(--lo);display:block;} .te-v{color:var(--txt);font-weight:500;font-size:12.5px;}
+.te-v.vr{color:var(--red);} .te-v.vg{color:var(--green);} .te-v.vb{color:var(--blue);} .te-v.vc{color:var(--cyan);}
+.te-ctrl{font-family:var(--mono);font-size:11px;color:var(--lo);margin-top:5px;padding-top:5px;border-top:1px solid var(--bdr);}
+.sensor-block{border:1px solid var(--bdr);padding:10px 12px;margin:8px 0;}
+.sensor-block.sb-supply{border-color:var(--cyan-m);background:rgba(48,232,216,0.04);}
+.sensor-block.sb-return{border-color:var(--orange-m);background:rgba(255,140,48,0.04);}
+.sb-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sb-title.t-supply .sb-dot{background:var(--cyan);} .sb-title.t-supply{color:var(--cyan);}
+.sb-title.t-return .sb-dot{background:var(--orange);} .sb-title.t-return{color:var(--orange);}
+.statusbar{background:#080a08;border-top:1px solid var(--bdr);padding:5px 20px;display:flex;gap:22px;font-family:var(--mono);font-size:10px;color:var(--lo);flex-shrink:0;flex-wrap:wrap;}
+.sbi{display:flex;align-items:center;gap:5px;} .sbv{color:var(--amber);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--bdr-hi);transition:all .3s;}
+.sdot.ok{background:var(--green);box-shadow:0 0 5px var(--green);} .sdot.warn{background:var(--amber);} .sdot.bad{background:var(--red);}
+hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
+@keyframes pulse{0%{r:9;opacity:.9}100%{r:22;opacity:0}}
+.pr{animation:pulse 1.2s ease-out infinite;}
+.m2-section{display:none;} .m2-section.on{display:block;}
+.info-note{font-size:12px;color:var(--lo);font-style:italic;line-height:1.5;margin:6px 0;padding:7px 10px;border-left:2px solid var(--bdr-hi);}
+.process-flow{display:flex;align-items:center;gap:0;margin:10px 0;font-family:var(--mono);font-size:10px;}
+.pf-node{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--bdr);background:#080a08;}
+.pf-node .pf-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lo);margin-bottom:3px;}
+.pf-node .pf-val{font-size:12px;font-weight:500;}
+.pf-node.pf-ret{border-color:var(--orange-m);background:var(--orange-bg);} .pf-node.pf-ret .pf-val{color:var(--orange);}
+.pf-node.pf-sup{border-color:var(--cyan-m);background:var(--cyan-bg);}     .pf-node.pf-sup .pf-val{color:var(--cyan);}
+.pf-node.pf-room{border-color:var(--bdr-hi);background:#0e1010;}            .pf-node.pf-room .pf-val{color:var(--txt);}
+.pf-node.pf-sp{border-color:var(--green-m);background:var(--green-bg);}     .pf-node.pf-sp .pf-val{color:var(--green);}
+.pf-arrow{color:var(--lo);padding:0 2px;font-size:14px;flex-shrink:0;}
+.pf-arrow.cool{color:var(--blue);} .pf-arrow.heat{color:var(--red);}
+
+/* ══════════════════════════════
+   TIME SERIES MODE
+══════════════════════════════ */
+.ts-layout{display:none;grid-template-columns:280px 1fr 340px;flex:1;min-height:0;}
+.ts-layout.on{display:grid;}
+.main.hidden{display:none;}
+
+/* Upload zone */
+.upload-zone{border:1px dashed var(--bdr-hi);padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;margin:10px 0;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--amber);background:var(--amber-bg);}
+.upload-zone input[type=file]{display:none;}
+.upload-icon{font-size:24px;margin-bottom:8px;color:var(--lo);}
+.upload-text{font-size:13px;color:var(--lo);line-height:1.5;}
+.upload-text strong{color:var(--txt);}
+.file-loaded{border-color:var(--green);background:var(--green-bg);}
+.file-loaded .upload-icon{color:var(--green);}
+.file-loaded .upload-text{color:var(--green);}
+
+/* Metric pill row */
+.pill-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;}
+.pill{background:#080a08;border:1px solid var(--bdr);padding:9px 11px;}
+.pill-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--lo);margin-bottom:3px;}
+.pill-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--hi);}
+.pill-val.vr{color:var(--red);} .pill-val.vg{color:var(--green);}
+.pill-val.va{color:var(--amber);} .pill-val.vc{color:var(--cyan);}
+.pill-sub{font-size:10px;color:var(--lo);margin-top:2px;}
+
+/* Series toggles */
+.toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;cursor:pointer;}
+.toggle-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.toggle-lbl{font-size:13px;color:var(--txt);flex:1;}
+.toggle-chk{width:16px;height:16px;cursor:pointer;accent-color:var(--amber);}
+
+/* Chart canvas area */
+.ts-chart-area{display:flex;flex-direction:column;padding:10px 12px 6px;background:var(--bg);min-height:0;}
+.ts-chart-area .col-head{margin:0 -12px;padding:8px 12px;}
+#ts-canvas{flex:1;width:100%;display:block;cursor:crosshair;}
+.ts-tooltip{position:absolute;background:#0c0e0d;border:1px solid var(--amber);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--hi);pointer-events:none;display:none;z-index:10;line-height:1.6;}
+
+/* Finding cards */
+.finding{border-left:3px solid var(--bdr);padding:10px 13px;margin-bottom:9px;background:var(--surf);}
+.finding.fa{border-color:var(--red);background:var(--red-bg);}
+.finding.fw{border-color:var(--amber);background:var(--amber-bg);}
+.finding.fg{border-color:var(--green);background:var(--green-bg);}
+.finding.fi{border-color:var(--blue);background:var(--blue-bg);}
+.f-tag{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;font-weight:500;}
+.f-tag.ta{color:var(--red);} .f-tag.tw{color:var(--amber);} .f-tag.tg{color:var(--green);} .f-tag.ti{color:var(--blue);}
+.f-title{font-size:13px;font-weight:700;color:var(--hi);margin-bottom:4px;line-height:1.3;}
+.f-text{font-size:12px;line-height:1.6;color:var(--txt);}
+.f-text strong{color:var(--hi);font-weight:600;}
+
+/* Hourly heatmap */
+.heatmap-wrap{overflow-x:auto;margin-top:8px;}
+.heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;min-width:520px;}
+.hm-cell{height:28px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:var(--xlo);flex-direction:column;gap:1px;}
+.hm-val{font-size:9px;font-weight:500;}
+.hm-hr{font-size:7px;color:var(--xlo);}
+.hm-legend{display:flex;gap:12px;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--lo);}
+.hm-swatch{width:12px;height:12px;border-radius:2px;display:inline-block;}
+.tol-block{border:1px solid var(--bdr-hi);padding:9px 12px;margin:6px 0;background:rgba(240,176,48,0.04);}
+.tol-note{font-size:11.5px;color:var(--lo);line-height:1.5;margin-bottom:8px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AHU Psychro Navigator</h1>
+  <span class="sub">// Psychrometric Control Decision Tool</span>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-m1" onclick="setMode(1)">Room Only</button>
+    <button class="mode-btn" id="btn-m2" onclick="setMode(2)">Full System</button>
+    <button class="mode-btn" id="btn-ts" onclick="setMode('ts')">Time Series ✦</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════
+     MODES 1 & 2 — THREE COLUMN LAYOUT
+═══════════════════════════════════════════════ -->
+<div class="main" id="main-layout">
+
+<!-- LEFT -->
+<div class="col">
+  <div class="col-head"><span class="dot-ind" id="dot-in"></span>Inputs &amp; Controls</div>
+  <div class="col-body">
+    <div class="sec">Current Room Conditions</div>
+    <div class="ir"><label>Dry Bulb Temperature</label><input type="number" id="curr-t" value="18" step="0.1" min="5" max="45"><span class="unit">°C</span></div>
+    <div class="ir"><label>Relative Humidity</label><input type="number" id="curr-rh" value="65" step="0.5" min="1" max="99"><span class="unit">%</span></div>
+    <div class="sec">Target Setpoint</div>
+    <div class="ir"><label>Target Temperature</label><input type="number" id="sp-t" value="20" step="0.1" min="5" max="45"><span class="unit">°C</span></div>
+    <div class="ir"><label>Target RH</label><input type="number" id="sp-rh" value="55" step="0.5" min="1" max="99"><span class="unit">%</span></div>
+    <div class="sec">Acceptable Tolerance <span class="sec-chip sc-opt">offset band</span></div>
+    <div class="tol-block">
+      <div class="tol-note">Values within this band of setpoint are treated as acceptable — no further action needed.</div>
+      <div class="ir"><label>Temperature ±</label><input type="number" id="tol-t" value="0.5" step="0.1" min="0" max="3"><span class="unit">°C</span></div>
+      <div class="ir"><label>RH ±</label><input type="number" id="tol-rh" value="2" step="0.5" min="0" max="10"><span class="unit">%</span></div>
+    </div>
+    <div class="m2-section" id="m2-inputs">
+      <div class="sec">Supply Duct Sensor <span class="sec-chip sc-m2">after heater</span></div>
+      <div class="sensor-block sb-supply">
+        <div class="sb-title t-supply"><span class="sb-dot"></span>Supply Air — Post Heater</div>
+        <div class="ir"><label>Supply Temperature</label><input type="number" id="sup-t" placeholder="—" step="0.1" min="0" max="40" class="inp-m2"><span class="unit">°C</span></div>
+        <div class="ir"><label>Supply RH</label><input type="number" id="sup-rh" placeholder="—" step="0.5" min="1" max="99" class="inp-m2"><span class="unit">%</span></div>
+      </div>
+      <div class="sec">Return Duct Sensor <span class="sec-chip sc-opt">optional</span></div>
+      <div class="sensor-block sb-return">
+        <div class="sb-title t-return"><span class="sb-dot"></span>Return Air — Pre Coil</div>
+        <div class="ir"><label>Return Temperature</label><input type="number" id="ret-t" placeholder="—" step="0.1" min="5" max="45" class="inp-ret"><span class="unit">°C</span></div>
+        <div class="ir"><label>Return RH</label><input type="number" id="ret-rh" placeholder="—" step="0.5" min="1" max="99" class="inp-ret"><span class="unit">%</span></div>
+      </div>
+      <div class="sec">Chiller Setpoint <span class="sec-chip sc-opt">optional</span></div>
+      <div class="sensor-block" style="border-color:#2a3060;background:rgba(90,100,255,0.04);">
+        <div class="sb-title" style="color:#8090ff;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#8090ff"></span>Chilled Water Supply Temp</div>
+        <div class="ir"><label>Current CHW SP</label><input type="number" id="chw-cur" placeholder="—" step="0.5" min="4" max="20" style="border-color:#2a3060;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Min CHW SP (limit)</label><input type="number" id="chw-min" placeholder="—" step="0.5" min="4" max="16" style="border-color:#2a3060;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Max CHW SP (limit)</label><input type="number" id="chw-max" placeholder="—" step="0.5" min="8" max="20" style="border-color:#2a3060;"><span class="unit">°C</span></div>
+      </div>
+      <div class="sec">Outside Air Conditions <span class="sec-chip sc-opt">optional</span></div>
+      <div class="sensor-block" style="border-color:#304a30;background:rgba(64,160,64,0.04);">
+        <div class="sb-title" style="color:#70c070;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#70c070"></span>Outdoor Air — for mixing analysis</div>
+        <div class="ir"><label>OA Temperature</label><input type="number" id="oa-t" placeholder="—" step="0.1" min="-10" max="50" style="border-color:#304a30;"><span class="unit">°C</span></div>
+        <div class="ir"><label>OA Relative Humidity</label><input type="number" id="oa-rh" placeholder="—" step="0.5" min="1" max="99" style="border-color:#304a30;"><span class="unit">%</span></div>
+      </div>
+    </div>
+    <button class="calc-btn" id="calc-btn">⟳ Calculate</button>
+    <div class="results" id="results">
+      <div class="sec">Calculated — Room State</div>
+      <div class="ctable">
+        <div class="ct-row"><span class="ct-k">Saturation Pressure Psat(T)</span><span class="ct-v va" id="r-psat">—</span></div>
+        <div class="ct-row"><span class="ct-k">Room Humidity Ratio W</span><span class="ct-v vb" id="r-cw">—</span></div>
+        <div class="ct-row"><span class="ct-k">Dew Point Temperature</span><span class="ct-v" id="r-dp">—</span></div>
+        <div class="ct-row"><span class="ct-k">Enthalpy h</span><span class="ct-v" id="r-h">—</span></div>
+      </div>
+      <div class="sec">Key Analysis</div>
+      <div class="mcard" id="proj-card">
+        <div class="mc-lbl">Projected RH at Setpoint Temperature</div>
+        <div class="mc-big" id="proj-big">—</div>
+        <div class="mc-exp" id="proj-exp">—</div>
+        <span class="verdict" id="proj-verd">—</span>
+      </div>
+      <div class="mcard" id="w-card">
+        <div class="mc-lbl">Humidity Ratio — Room vs Target</div>
+        <div class="cmp">
+          <div class="cmp-item"><div class="cmp-lbl">Room W</div><div class="cmp-num" id="cmp-cw">—</div></div>
+          <div class="cmp-arr">→</div>
+          <div class="cmp-item"><div class="cmp-lbl">Target W</div><div class="cmp-num vg" id="cmp-tw">—</div></div>
+        </div>
+        <div class="mc-exp" id="w-exp" style="margin-top:9px;">—</div>
+      </div>
+      <div class="ctable">
+        <div class="ct-row"><span class="ct-k">Moisture Gap (ΔW)</span><span class="ct-v" id="r-dw">—</span></div>
+        <div class="ct-row"><span class="ct-k">Temperature Rise Needed (ΔT)</span><span class="ct-v" id="r-dt">—</span></div>
+      </div>
+      <hr class="div">
+      <div class="sec">Control Positions</div>
+      <div class="sld-wrap">
+        <div class="sld-head"><span class="sld-name">🔵 Cooling Valve</span><span class="sld-val" id="vv">50%</span></div>
+        <input type="range" id="valve" min="0" max="100" value="50">
+      </div>
+      <div class="sld-wrap">
+        <div class="sld-head"><span class="sld-name">🟢 Fan Speed</span><span class="sld-val" id="fv">70%</span></div>
+        <input type="range" id="fan" min="0" max="100" value="70">
+      </div>
+      <div class="sld-wrap">
+        <div class="sld-head"><span class="sld-name">🔴 Heater</span><span class="sld-val" id="hv">0%</span></div>
+        <input type="range" id="heater" min="0" max="100" value="0">
+      </div>
+      <button class="log-btn" id="log-btn">+ Log This State</button>
+      <button class="clr-btn" id="clr-btn">✕ Clear All Logged States</button>
+    </div>
+  </div>
+</div>
+
+<!-- CENTRE -->
+<div class="col chart-col">
+  <div class="col-head">Psychrometric Chart</div>
+  <svg id="psychro-chart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 420"></svg>
+  <div class="legend">
+    <div class="li"><span class="li-line" style="background:var(--blue);opacity:.7"></span>Room W</div>
+    <div class="li"><span class="li-line" style="background:var(--green);opacity:.7"></span>Target W</div>
+    <div class="li"><span class="li-dot" style="background:var(--blue)"></span>Room</div>
+    <div class="li"><span class="li-dot" style="background:var(--green)"></span>Setpoint</div>
+    <div class="li"><span class="li-dot" style="background:var(--purple);border:2px dashed var(--purple);background:transparent;"></span>Projected</div>
+    <div class="li"><span class="li-dot" style="background:var(--amber)"></span>Logged</div>
+    <div class="li m2-section" id="leg-sup"><span class="li-dot" style="background:var(--cyan)"></span>Supply</div>
+    <div class="li m2-section" id="leg-ret"><span class="li-dot" style="background:var(--orange)"></span>Return</div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="col" style="display:flex;flex-direction:column;min-height:0;">
+  <div class="col-head"><span class="dot-ind" id="dot-guide"></span><span>Guidance &amp; Log</span></div>
+  <div class="tab-bar m2-section" id="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('guidance')">Guidance</button>
+    <button class="tab-btn" id="tab-diag-btn" onclick="switchTab('diagnostics')">System Diag.</button>
+    <button class="tab-btn" onclick="switchTab('log')">State Log</button>
+  </div>
+  <div class="tab-pane active" id="pane-guidance">
+    <div class="sec" style="margin-top:2px">Control Phase</div>
+    <div class="phase-bar"><div class="ph" id="ph1">1. Dehumidify</div><div class="ph" id="ph2">2. Heat / Stabilise</div><div class="ph" id="ph3">3. At Setpoint</div></div>
+    <div id="dec"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter values and click Calculate</div><div class="dtext">Fill in current room conditions and target setpoint on the left panel. Press Calculate to see analysis and guidance.</div></div></div>
+    <div id="log-inline-wrapper"><hr class="div"><div class="sec">State Log</div><div id="log-m1"><div class="traj-empty">No states logged yet.</div></div></div>
+  </div>
+  <div class="tab-pane" id="pane-diagnostics"><div id="diag-content"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter supply duct sensor values and click Calculate</div></div></div></div>
+  <div class="tab-pane" id="pane-log"><div class="sec" style="margin-top:2px">State Log</div><div id="log-m2"><div class="traj-empty">No states logged yet.</div></div></div>
+</div>
+
+</div><!-- /main-layout -->
+
+
+<!-- ═══════════════════════════════════════════════
+     TIME SERIES MODE
+═══════════════════════════════════════════════ -->
+<div class="ts-layout" id="ts-layout">
+
+<!-- TS LEFT: Upload + Config -->
+<div class="col">
+  <div class="col-head">📂 Data Upload</div>
+  <div class="col-body">
+    <div class="sec">CSV File</div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('csv-input').click()">
+      <input type="file" id="csv-input" accept=".csv">
+      <div class="upload-icon" id="upload-icon">⬆</div>
+      <div class="upload-text" id="upload-text"><strong>Click to upload BMS export</strong><br>One row per minute. Columns: Time, Area RH/T, Return RH/T, Supply RH/T</div>
+    </div>
+
+    <div class="sec">Setpoint for Analysis</div>
+    <div class="ir"><label>Target Temperature</label><input type="number" id="ts-sp-t" value="20" step="0.1" min="5" max="45"><span class="unit">°C</span></div>
+    <div class="ir"><label>Target RH</label><input type="number" id="ts-sp-rh" value="55" step="0.5" min="1" max="99"><span class="unit">%</span></div>
+
+    <div id="ts-file-info" style="display:none">
+      <div class="sec">Loaded Dataset</div>
+      <div class="ctable">
+        <div class="ct-row"><span class="ct-k">AHU / Zone</span><span class="ct-v va" id="ts-ahu-name">—</span></div>
+        <div class="ct-row"><span class="ct-k">Time Range</span><span class="ct-v" id="ts-time-range">—</span></div>
+        <div class="ct-row"><span class="ct-k">Data Points</span><span class="ct-v" id="ts-rows">—</span></div>
+        <div class="ct-row"><span class="ct-k">Resolution</span><span class="ct-v">1 min</span></div>
+        <div class="ct-row"><span class="ct-k">Control Variables</span><span class="ct-v" id="ts-ctrl-status">—</span></div>
+        <div class="ct-row"><span class="ct-k">OA Sensor</span><span class="ct-v" id="ts-oa-status">—</span></div>
+      </div>
+
+      <div class="sec">Humidity Ratio &amp; Temperature</div>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--blue)"></span><span class="toggle-lbl">Room W</span><input type="checkbox" class="toggle-chk" id="tog-aW" checked onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--orange)"></span><span class="toggle-lbl">Return W</span><input type="checkbox" class="toggle-chk" id="tog-rW" checked onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--cyan)"></span><span class="toggle-lbl">Supply W</span><input type="checkbox" class="toggle-chk" id="tog-sW" checked onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--red);opacity:.7"></span><span class="toggle-lbl">Coil ΔW (bars)</span><input type="checkbox" class="toggle-chk" id="tog-coil" checked onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--txt);opacity:.5"></span><span class="toggle-lbl">Area Temperature</span><input type="checkbox" class="toggle-chk" id="tog-T" checked onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:#90b030;opacity:.8"></span><span class="toggle-lbl">OA Temperature <span style="font-size:10px;color:var(--lo)">(if available)</span></span><input type="checkbox" class="toggle-chk" id="tog-oaT" onchange="drawTs()"></label>
+      <div class="sec">Control Variables <span class="sec-chip sc-opt">if available</span></div>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--blue);opacity:.9"></span><span class="toggle-lbl">Valve Position %</span><input type="checkbox" class="toggle-chk" id="tog-valve" onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--green);opacity:.9"></span><span class="toggle-lbl">Fan Speed %</span><input type="checkbox" class="toggle-chk" id="tog-fan" onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:var(--red);opacity:.9"></span><span class="toggle-lbl">Heater %</span><input type="checkbox" class="toggle-chk" id="tog-heater" onchange="drawTs()"></label>
+
+      <div class="sec">Key Metrics</div>
+      <div class="pill-row" id="ts-pills"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TS CENTRE: Chart -->
+<div class="col ts-chart-area" style="position:relative;">
+  <div class="col-head" id="ts-chart-head">Time Series — W &amp; Temperature</div>
+  <canvas id="ts-canvas"></canvas>
+  <div class="ts-tooltip" id="ts-tooltip"></div>
+</div>
+
+<!-- TS RIGHT: Findings -->
+<div class="col">
+  <div class="col-head">📋 Automated Findings</div>
+  <div class="col-body">
+    <div id="ts-findings">
+      <div class="finding fi">
+        <div class="f-tag ti">Waiting</div>
+        <div class="f-title">Upload a CSV to see findings</div>
+        <div class="f-text">The analysis engine will automatically evaluate coil performance, setpoint achievement, moisture load patterns, and control stability from your BMS data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /ts-layout -->
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="sbi"><span class="sdot" id="sdot"></span>STATUS: <span class="sbv" id="sb-status">—</span></div>
+  <div class="sbi">ROOM W: <span class="sbv" id="sb-cw">—</span></div>
+  <div class="sbi">TARGET W: <span class="sbv" id="sb-tw">—</span></div>
+  <div class="sbi">PROJ RH: <span class="sbv" id="sb-proj">—</span></div>
+  <div class="sbi" id="sb-ts-wrap" style="display:none">DATASET: <span class="sbv" id="sb-ts-info">—</span></div>
+  <div class="sbi">LOGGED: <span class="sbv" id="sb-n">0</span></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// PSYCHROMETRICS
+// ════════════════════════════════════════════════
+const PATM=101.325;
+const psat=T=>0.6108*Math.exp(17.27*T/(T+237.3));
+const Wfn=(T,RH)=>{const Pw=(RH/100)*psat(T);return 1000*0.622*Pw/(PATM-Pw);};
+const pRHfn=(T,Wg)=>{if(Wg<=0)return 0;const w=Wg/1e3,Pw=w*PATM/(0.622+w);return Math.min(100,Pw/psat(T)*100);};
+const dpFn=(T,RH)=>{const a=17.27,b=237.3,g=Math.log(Math.max(RH,.01)/100)+a*T/(b+T);return b*g/(a-g);};
+const enthFn=(T,Wg)=>1.006*T+Wg/1e3*(2501+1.86*T);
+
+// ════════════════════════════════════════════════
+// PSYCHROMETRIC CHART (modes 1 & 2)
+// ════════════════════════════════════════════════
+const NS='http://www.w3.org/2000/svg';
+const SVG=document.getElementById('psychro-chart');
+const M={top:16,right:24,bottom:42,left:52};
+const VW=700,VH=420,CW=VW-M.left-M.right,CH=VH-M.top-M.bottom;
+const T0=5,T1=42,W0=0,W1=25;
+const tx=t=>M.left+(t-T0)/(T1-T0)*CW;
+const wy=w=>M.top+CH-Math.min(Math.max(w-W0,0),W1)/(W1-W0)*CH;
+const mkEl=(tag,a,txt)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);if(txt!==undefined)e.textContent=txt;return e;};
+
+function drawBase(){
+  SVG.innerHTML='';
+  const defs=mkEl('defs',{});
+  const mkArr=(id,color)=>{const m=mkEl('marker',{id,markerWidth:'8',markerHeight:'6',refX:'8',refY:'3',orient:'auto'});m.appendChild(mkEl('polygon',{points:'0 0,8 3,0 6',fill:color}));defs.appendChild(m);};
+  mkArr('arr-cyan','#30e8d8');mkArr('arr-orange','#ff8c30');mkArr('arr-blue','#5aabff');mkArr('arr-red','#f04848');
+  SVG.appendChild(defs);
+  SVG.appendChild(mkEl('rect',{x:0,y:0,width:VW,height:VH,fill:'#090b09'}));
+  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'#0a0c0a'}));
+  for(let w=0;w<=W1;w+=2){const y=wy(w);SVG.appendChild(mkEl('line',{x1:M.left,y1:y,x2:M.left+CW,y2:y,stroke:'#131913','stroke-width':.7}));SVG.appendChild(mkEl('text',{x:M.left-5,y:y+3.5,'text-anchor':'end',fill:'#2e3e2e','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(w)));}
+  for(let t=5;t<=T1;t+=5){const x=tx(t);SVG.appendChild(mkEl('line',{x1:x,y1:M.top,x2:x,y2:M.top+CH,stroke:'#131913','stroke-width':.7}));SVG.appendChild(mkEl('text',{x,y:M.top+CH+13,'text-anchor':'middle',fill:'#2e3e2e','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(t)));}
+  [10,20,30,40,50,60,70,80,90,100].forEach(rh=>{
+    const pts=[];for(let t=T0;t<=T1;t+=.35){const w=Wfn(t,rh);if(w<0||w>W1+.5)continue;pts.push(`${tx(t).toFixed(1)},${wy(Math.min(w,W1)).toFixed(1)}`);}
+    if(pts.length<2)return;
+    SVG.appendChild(mkEl('polyline',{points:pts.join(' '),fill:'none',stroke:rh===100?'#1e2e1e':'#141e14','stroke-width':rh%20===0||rh===100?1:.55}));
+    const lW=Wfn(34,rh);if(lW>.2&&lW<W1-.5)SVG.appendChild(mkEl('text',{x:tx(34)+3,y:wy(lW)+3,fill:'#1e2e1e','font-size':8,'font-family':'IBM Plex Mono,monospace'},rh+'%'));
+  });
+  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'none',stroke:'#222e22','stroke-width':1}));
+  SVG.appendChild(mkEl('text',{x:M.left+CW/2,y:VH-5,'text-anchor':'middle',fill:'#405040','font-size':10,'font-family':'IBM Plex Mono,monospace'},'DRY BULB TEMPERATURE (°C)'));
+  SVG.appendChild(mkEl('text',{x:11,y:M.top+CH/2,'text-anchor':'middle',fill:'#405040','font-size':10,'font-family':'IBM Plex Mono,monospace',transform:`rotate(-90,11,${M.top+CH/2})`},'HUMIDITY RATIO W (g/kg dry air)'));
+  SVG.appendChild(mkEl('g',{id:'og'}));
+}
+
+// ════════════════════════════════════════════════
+// APP STATE
+// ════════════════════════════════════════════════
+let mode=1, cs=null, ss=null, traj=[], sel=null, activeTab='guidance';
+
+// ════════════════════════════════════════════════
+// MODE TOGGLE
+// ════════════════════════════════════════════════
+function setMode(m){
+  mode=m;
+  [['1','btn-m1'],['2','btn-m2'],['ts','btn-ts']].forEach(([k,id])=>document.getElementById(id).classList.toggle('active',String(m)===String(k)));
+  document.getElementById('main-layout').classList.toggle('hidden', m==='ts');
+  document.getElementById('ts-layout').classList.toggle('on', m==='ts');
+  document.querySelectorAll('.m2-section').forEach(el=>el.classList.toggle('on',m===2));
+  document.getElementById('tab-bar').style.display=m===2?'flex':'none';
+  document.getElementById('log-inline-wrapper').style.display=m===2?'none':'block';
+  document.getElementById('sb-ts-wrap').style.display=m==='ts'?'flex':'none';
+  if(m==='ts'){ resizeTs(); if(tsData) drawTs(); }
+  else{ if(m===1){document.getElementById('pane-guidance').className='tab-pane active';document.getElementById('pane-diagnostics').className='tab-pane';document.getElementById('pane-log').className='tab-pane';} syncLog(); redraw(); }
+}
+
+function switchTab(n){
+  activeTab=n;
+  ['guidance','diagnostics','log'].forEach(t=>{document.getElementById('pane-'+t).classList.toggle('active',t===n);});
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['guidance','diagnostics','log'][i]===n));
+}
+
+// ════════════════════════════════════════════════
+// SNAPSHOT CALCULATE
+// ════════════════════════════════════════════════
+function calc(){
+  const cT=parseFloat(document.getElementById('curr-t').value);
+  const cR=parseFloat(document.getElementById('curr-rh').value);
+  const sT=parseFloat(document.getElementById('sp-t').value);
+  const sR=parseFloat(document.getElementById('sp-rh').value);
+  if([cT,cR,sT,sR].some(isNaN))return;
+  const tolT=Math.abs(parseFloat(document.getElementById('tol-t').value)||0.5);
+  const tolRH=Math.abs(parseFloat(document.getElementById('tol-rh').value)||2);
+  // Compute W for high-end and low-end of RH tolerance to get W tolerance
+  const spWhi=Wfn(sT,Math.min(99,sR+tolRH));
+  const spWlo=Wfn(sT,Math.max(1,sR-tolRH));
+  const tolW=spWhi-spWlo; // W range that maps to ±tolRH at setpoint T
+  const cW=Wfn(cT,cR),sW=Wfn(sT,sR),prh=pRHfn(sT,cW),cdp=dpFn(cT,cR),ch=enthFn(cT,cW);
+  const dW=cW-sW,dT=sT-cT;
+  // atSP: T within ±tolT AND projected RH within ±tolRH of target
+  const atSP=Math.abs(dT)<=tolT&&Math.abs(prh-sR)<=tolRH;
+  cs={currT:cT,currRH:cR,currW:cW,spT:sT,spRH:sR,spW:sW,pRH:prh,dp:cdp,h:ch,dW,dT,tolT,tolRH,tolW,atSP,spWhi,spWlo};
+  ss=null;
+  if(mode===2){
+    const supT=parseFloat(document.getElementById('sup-t').value);
+    const supRH=parseFloat(document.getElementById('sup-rh').value);
+    const retT=parseFloat(document.getElementById('ret-t').value);
+    const retRH=parseFloat(document.getElementById('ret-rh').value);
+    const chwCur=parseFloat(document.getElementById('chw-cur').value);
+    const chwMin=parseFloat(document.getElementById('chw-min').value);
+    const chwMax=parseFloat(document.getElementById('chw-max').value);
+    const oaT=parseFloat(document.getElementById('oa-t').value);
+    const oaRH=parseFloat(document.getElementById('oa-rh').value);
+    const hasChw=!isNaN(chwCur);
+    const hasOA=!isNaN(oaT)&&!isNaN(oaRH);
+    if(!isNaN(supT)&&!isNaN(supRH)){
+      const supW=Wfn(supT,supRH);
+      const hasRet=!isNaN(retT)&&!isNaN(retRH);
+      const retW=hasRet?Wfn(retT,retRH):null;
+      const oaW=hasOA?Wfn(oaT,oaRH):null;
+      // Chiller headroom: can we cool CHW further?
+      const chwCanDrop=hasChw&&!isNaN(chwMin)&&chwCur>chwMin+0.3;
+      const chwCanRaise=hasChw&&!isNaN(chwMax)&&chwCur<chwMax-0.3;
+      const chwMargin=hasChw&&!isNaN(chwMin)?chwCur-chwMin:null;
+      // OA analysis
+      let oaHelpsDehumid=false, oaHelpsCool=false, oaHurts=false;
+      if(hasOA){
+        oaHelpsDehumid=oaW<cW;    // OA is drier than room
+        oaHelpsCool=oaT<cT;       // OA is cooler than room
+        oaHurts=oaW>sW;           // OA is too humid to help reach setpoint W
+      }
+      ss={supT,supRH,supW,retT:hasRet?retT:null,retRH:hasRet?retRH:null,retW,hasReturn:hasRet,
+        coilDeltaW:hasRet?retW-supW:null,supVsTargetW:supW-sW,
+        retVsRoomW:hasRet?retW-cW:null,retVsRoomT:hasRet?retT-cT:null,
+        hasChw,chwCur:hasChw?chwCur:null,chwMin:!isNaN(chwMin)?chwMin:null,chwMax:!isNaN(chwMax)?chwMax:null,
+        chwCanDrop,chwCanRaise,chwMargin,
+        hasOA,oaT:hasOA?oaT:null,oaRH:hasOA?oaRH:null,oaW,
+        oaHelpsDehumid,oaHelpsCool,oaHurts};
+    }
+  }
+  document.getElementById('results').classList.add('on');
+  document.getElementById('dot-in').classList.add('on');
+  document.getElementById('dot-guide').classList.add('on');
+  document.getElementById('r-psat').textContent=psat(cT).toFixed(3)+' kPa';
+  document.getElementById('r-cw').textContent=cW.toFixed(2)+' g/kg';
+  document.getElementById('r-dp').textContent=cdp.toFixed(1)+' °C';
+  document.getElementById('r-h').textContent=ch.toFixed(1)+' kJ/kg';
+  document.getElementById('r-dw').textContent=(dW>=0?'+':'')+dW.toFixed(2)+' g/kg';
+  document.getElementById('r-dt').textContent=(dT>=0?'+':'')+dT.toFixed(1)+' °C';
+  document.getElementById('cmp-tw').textContent=sW.toFixed(2);
+  // Projected RH card
+  const pc=document.getElementById('proj-card'),pb=document.getElementById('proj-big'),pe=document.getElementById('proj-exp'),pv=document.getElementById('proj-verd');
+  pb.textContent=prh.toFixed(1)+' %';
+  if(prh>sR+0.5){pc.className='mcard mr';pb.className='mc-big vr';pe.innerHTML=`If air at its <strong>current moisture level (W = ${cW.toFixed(2)} g/kg)</strong> is brought to ${sT}°C, RH would be <strong>${prh.toFixed(1)}%</strong> — ${(prh-sR).toFixed(1)}% above target. <strong>Dehumidify first.</strong>`;pv.textContent='✗ Too humid — dehumidify first';pv.className='verdict vbad';}
+  else if(prh<sR-0.5){pc.className='mcard mg';pb.className='mc-big vg';pe.innerHTML=`At ${sT}°C, current moisture gives <strong>${prh.toFixed(1)}% RH</strong> — ${(sR-prh).toFixed(1)}% below target. Moisture is OK. Focus on temperature.`;pv.textContent='✓ Moisture OK — adjust temperature';pv.className='verdict vok';}
+  else{pc.className='mcard ma';pb.className='mc-big va';pe.innerHTML=`Projected RH ${prh.toFixed(1)}% ≈ target ${sR}%. Fine-tune temperature.`;pv.textContent='~ Near target';pv.className='verdict vwrn';}
+  // W comparison card
+  const wc=document.getElementById('w-card'),we=document.getElementById('w-exp'),cc=document.getElementById('cmp-cw');
+  cc.textContent=cW.toFixed(2);
+  if(dW>0.15){wc.className='mcard mr';cc.className='cmp-num vr';we.innerHTML=`Room holds <strong>${cW.toFixed(2)} g/kg</strong> — target is <strong>${sW.toFixed(2)} g/kg</strong>. Must remove <strong>${dW.toFixed(2)} g/kg</strong> per kg of dry air.`;}
+  else if(dW<-0.15){wc.className='mcard mb';cc.className='cmp-num vb';we.innerHTML=`Room W (${cW.toFixed(2)}) already below target (${sW.toFixed(2)}). Air is dry enough — focus on temperature.`;}
+  else{wc.className='mcard mg';cc.className='cmp-num vb';we.innerHTML=`Humidity ratio on target. ${cW.toFixed(2)} ≈ ${sW.toFixed(2)} g/kg. Focus on temperature.`;}
+  updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); redraw();
+}
+
+// ════════════════════════════════════════════════
+// DECISION ENGINE
+// ════════════════════════════════════════════════
+function updateDec(){
+  if(!cs)return;
+  const{currT,currRH,currW,spT,spRH,spW,pRH:prh,dW,dT,tolT,tolRH,atSP}=cs;
+  const valve =parseInt(document.getElementById('valve').value);
+  const fan   =parseInt(document.getElementById('fan').value);
+  const heater=parseInt(document.getElementById('heater').value);
+  const con=document.getElementById('dec');con.innerHTML='';
+  const valveFull=valve>=95,valveNearFull=valve>=80,fanLow=fan<=30,heaterFull=heater>=95,heaterHigh=heater>=80;
+  const chw=ss||{};
+  const chwCanDrop=chw.chwCanDrop||false,hasOA=chw.hasOA||false;
+  const oaHelpsDehumid=chw.oaHelpsDehumid||false,oaHelpsCool=chw.oaHelpsCool||false,oaHurts=chw.oaHurts||false;
+  const oaW=chw.oaW;
+  const dehumid=dW>cs.tolW/2+0.05,heat=dT>tolT,over=dT<-tolT;
+  [document.getElementById('ph1'),document.getElementById('ph2'),document.getElementById('ph3')].forEach(p=>p.className='ph');
+  if(atSP){document.getElementById('ph1').className+=' done';document.getElementById('ph2').className+=' done';document.getElementById('ph3').className+=' active';}
+  else if(dehumid){document.getElementById('ph1').className+=' active';}
+  else{document.getElementById('ph1').className+=' done';document.getElementById('ph2').className+=' active';}
+  if(atSP){
+    con.appendChild(blk('g','tg','Within Acceptable Band',`Room is at ${currT.toFixed(1)}°C / ${currRH.toFixed(0)}% RH — both within the \u00b1${tolT}\u00b0C / \u00b1${tolRH}% tolerance band. Projected RH at ${spT}\u00b0C = ${prh.toFixed(1)}%. No action needed.`,[`Valve:${valve}% Fan:${fan}% Heater:${heater}%`]));
+    return;
+  }
+  const impossible=[];
+  if(dehumid&&valveFull&&!chwCanDrop){
+    if(!chw.hasChw)impossible.push(`Valve is fully open (${valve}%) and no chiller setpoint data was provided. If chilled water temperature cannot be lowered, this AHU may have reached its dehumidification limit.`);
+    else impossible.push(`Valve at maximum (${valve}%) and chiller setpoint already at minimum (${chw.chwCur}\u00b0C = min ${chw.chwMin}\u00b0C). No further cooling capacity available from this AHU.`);
+  }
+  if(dehumid&&hasOA&&oaHurts&&valveFull)impossible.push(`OA (W = ${oaW.toFixed(2)} g/kg) is wetter than target W (${spW.toFixed(2)} g/kg). With valve fully open and ventilation minimum enforced, coil must overcome this constant latent load.`);
+  if(heat&&heaterFull)impossible.push(`Heater at maximum (${heater}%). If temperature has not reached ${spT.toFixed(1)}\u00b0C, AHU heating capacity is the limiting factor.`);
+  if(impossible.length){
+    const ic=document.createElement('div');ic.className='dblk da';
+    ic.innerHTML=`<div class="dtag ta">\u2297 Capacity Limit Reached</div><div class="dtitle">Some Targets May Not Be Achievable With Current Equipment State</div>`;
+    const al=document.createElement('div');al.className='dacts';
+    impossible.forEach(m=>{al.innerHTML+=`<div class="dact"><span class="darr" style="color:var(--red)">!</span><span>${m}</span></div>`;});
+    ic.appendChild(al);con.appendChild(ic);
+  }
+  if(dehumid){
+    con.appendChild(blk('a','ta','\u2297 Phase 1 \u2014 Remove Moisture First',
+      `Room holds <strong>${currW.toFixed(2)} g/kg</strong>; target is <strong>${spW.toFixed(2)} g/kg</strong> (acceptable up to <strong>${cs.spWhi.toFixed(2)} g/kg</strong> with \u00b1${tolRH}% tolerance). At ${spT}\u00b0C with current moisture, RH would be <strong>${prh.toFixed(1)}%</strong> \u2014 ${(prh-spRH).toFixed(1)}% above target. <strong>Dehumidify before adjusting temperature.</strong>`,
+      buildDehumidActions(valve,fan,valveFull,valveNearFull,fanLow,chwCanDrop,chw,hasOA,oaHurts,spW)));
+    if(hasOA&&oaHelpsDehumid&&!oaHurts){
+      con.appendChild(blk('c','tc','\u27f3 Outside Air Can Assist Dehumidification',
+        `Outside air is at <strong>W = ${oaW.toFixed(2)} g/kg</strong>, drier than the room (${currW.toFixed(2)} g/kg). Increasing OA fraction reduces the mechanical dehumidification burden on the coil.`,
+        [`Increase OA damper opening if controls permit`,`Each % of additional OA replaces room air that is ${(currW-oaW).toFixed(2)} g/kg more humid`,`Most effective during off-peak hours to pre-condition the space`]));
+    }
+    if(hasOA&&oaHurts)con.appendChild(blk('w','tw','\u25b2 Minimise Outside Air While Dehumidifying',`OA (W = ${oaW.toFixed(2)} g/kg) is wetter than target W (${spW.toFixed(2)} g/kg) — every unit of OA adds latent load the coil must remove. Keep OA at ventilation minimum.`,[]));
+    if(dT>tolT)con.appendChild(blk('i','ti','\u2139 Temperature Also Needs to Rise',`Room at ${currT.toFixed(1)}\u00b0C needs to reach ${spT.toFixed(1)}\u00b0C (\u00b1${tolT}\u00b0C). Address moisture first \u2014 temperature guidance follows in Phase 2.`,[]));
+    return;
+  }
+  if(heat){
+    con.appendChild(blk('w','tw','\u25b2 Phase 2 \u2014 Moisture OK, Raise Temperature',`Humidity ratio is within the acceptable band (\u0394W = ${dW.toFixed(2)} g/kg, tolerance \u00b1${(cs.tolW/2).toFixed(2)} g/kg \u2713). Room at ${currT.toFixed(1)}\u00b0C needs to reach ${spT.toFixed(1)}\u00b0C (\u00b1${tolT}\u00b0C). Try options in order.`,[]));
+    const optA=[`Close valve in 5-10% steps (currently ${valve}%), wait 3-5 minutes per step`,`Good: T rises, RH falls -> W constant -> pure sensible heating -> continue closing until T enters ${(spT-tolT).toFixed(1)}-${(spT+tolT).toFixed(1)} band`,`Problem: T rises but RH also rises -> W increasing -> active moisture source in room -> stop and use Option B`,`If T reaches setpoint band with RH at or below ${spRH+tolRH}%, done`];
+    if(valveFull)optA.unshift(`Note: valve is at ${valve}% - closing is the correct action here since the aim is to reduce cooling and allow temperature to rise`);
+    con.appendChild(blk('w','tw','\u25b2 Option A \u2014 Close Valve, Watch RH Response','',optA));
+    const optB=heaterFull?[`Heater is already at maximum (${heater}%). If temperature has not reached setpoint, AHU heating capacity may be the limiting factor - see capacity warning above`]:
+      [`Reopen valve to restore dehumidification - bring W back to at or below ${cs.spWhi.toFixed(2)} g/kg before proceeding`,
+       `Step heater up in 10% increments (currently ${heater}%) - heater adds only sensible heat, W stays constant, so as temperature rises RH will fall`,
+       `Wait 5-10 minutes between heater steps before re-reading`,
+       heaterHigh?`Heater already high (${heater}%) - watch closely for overshoot past ${(spT+tolT).toFixed(1)} degrees`:'',
+       `Most energy-intensive strategy - use only after Option A confirms active latent load`].filter(Boolean);
+    if(hasOA&&oaHelpsCool)optB.push(`OA at ${chw.oaT.toFixed(1)} degrees is cooler than room - do not increase OA damper while trying to raise temperature`);
+    con.appendChild(blk('a','ta','\u2297 Option B \u2014 Cooling + Reheat (Latent Load Confirmed)','Only after Option A shows RH rising as valve closes:',optB));
+  }
+  if(over){
+    const overActs=[`Reduce heater immediately (currently ${heater}%)`,`Open cooling valve - monitor W and keep it at or below ${cs.spWhi.toFixed(2)} g/kg`];
+    if(hasOA&&oaHelpsCool)overActs.push(`OA at ${chw.oaT.toFixed(1)} degrees is cooler than room - increasing OA fraction may help reduce temperature passively`);
+    else overActs.push(`As temperature falls, RH will rise slightly - this is normal as long as W stays constant`);
+    con.appendChild(blk('a','ta','\u2297 Temperature Overshot',`Room at ${currT.toFixed(1)}\u00b0C is ${(-dT).toFixed(1)}\u00b0C above tolerance ceiling of ${(spT+tolT).toFixed(1)}\u00b0C.`,overActs));
+  }
+}
+
+function buildDehumidActions(valve,fan,valveFull,valveNearFull,fanLow,chwCanDrop,chw,hasOA,oaHurts,spW){
+  const spT=cs?cs.spT:20;
+  const acts=[];
+  if(valveFull){
+    acts.push(`Cooling valve is fully open (${valve}%) - no further valve opening is possible. The coil is already receiving maximum chilled water flow.`);
+    if(chwCanDrop&&chw.chwCur!=null)acts.push(`Lower chiller setpoint: currently ${chw.chwCur} degrees, minimum is ${chw.chwMin} degrees (${chw.chwMargin.toFixed(1)} degrees of headroom available). A lower CHW temperature drops the coil surface further below the air dew point, causing more moisture to condense. This is the primary lever when the valve is already fully open.`);
+    else if(!chw.hasChw)acts.push(`Consider lowering chiller setpoint (enter CHW values above for specific guidance). A colder coil removes more moisture per pass.`);
+    if(!fanLow)acts.push(`Reduce fan speed (currently ${fan}%) - with valve fully open, slower airflow increases contact time with the cold coil surface, extracting more moisture per pass.`);
+  } else if(valveNearFull){
+    acts.push(`Open valve further (currently ${valve}%, approaching maximum) - some additional capacity likely available`);
+    if(!fanLow)acts.push(`Reduce fan speed (currently ${fan}%) in parallel - both actions compound dehumidification effectiveness`);
+    if(chwCanDrop&&chw.chwCur!=null)acts.push(`Chiller setpoint can also be reduced from ${chw.chwCur} toward ${chw.chwMin} degrees if valve alone is insufficient`);
+  } else {
+    acts.push(`Open cooling valve further (currently ${valve}%) - increases chilled water flow, lowers coil surface temperature below air dew point, causing moisture to condense and drain`);
+    if(!fanLow)acts.push(`Or reduce fan speed (currently ${fan}%) - slower airflow gives longer coil contact time, increasing condensation per pass`);
+    if(chwCanDrop&&chw.chwCur!=null)acts.push(`Chiller setpoint can be reduced from ${chw.chwCur} to as low as ${chw.chwMin} degrees if more aggressive dehumidification is needed`);
+  }
+  if(fanLow&&!valveFull)acts.push(`Fan is already low (${fan}%) - avoid reducing further to maintain ventilation minimum; focus on valve and chiller`);
+  acts.push(`Keep heater at 0% - heating moist air adds sensible energy without removing moisture, wasting energy`);
+  acts.push(`After each adjustment wait 5-10 minutes for conditions to stabilise, then re-read and log. Target: Projected RH at ${spT} degrees should fall toward ${cs?cs.spRH:55}%`);
+  return acts;
+}
+// ════════════════════════════════════════════════
+// SYSTEM DIAGNOSTICS (mode 2) — improved language
+// ════════════════════════════════════════════════
+function updateDiag(){
+  if(!cs||!ss)return;
+  const con=document.getElementById('diag-content');con.innerHTML='';
+  const{currT,currRH,currW,spT,spRH,spW,tolT,tolRH}=cs;
+  const{supT,supRH,supW,retT,retRH,retW,hasReturn,coilDeltaW,supVsTargetW,retVsRoomW,retVsRoomT,hasChw,chwCur,chwMin,chwMax,chwCanDrop,chwMargin,hasOA,oaT,oaRH,oaW,oaHelpsDehumid,oaHelpsCool,oaHurts}=ss;
+  const valve=parseInt(document.getElementById('valve').value);
+  const heater=parseInt(document.getElementById('heater').value);
+  const spWhi=cs.spWhi;
+
+  // Process flow
+  let fh=`<div class="sec" style="margin-top:2px">AHU Air Path — State at Each Point</div><div class="process-flow">`;
+  if(hasReturn){fh+=`<div class="pf-node pf-ret"><div class="pf-label">Return</div><div class="pf-val">${retT.toFixed(1)} / ${retW.toFixed(2)}</div></div><div class="pf-arrow cool">to coil</div>`;}
+  if(hasOA&&oaT!=null){fh+=`<div class="pf-node" style="border-color:#304a30;background:rgba(64,160,64,0.06)"><div class="pf-label" style="color:#70c070">OA</div><div class="pf-val" style="color:#70c070">${oaT.toFixed(1)} / ${oaW.toFixed(2)}</div></div><div class="pf-arrow" style="color:var(--lo)">mix</div>`;}
+  fh+=`<div class="pf-node pf-sup"><div class="pf-label">Supply</div><div class="pf-val">${supT.toFixed(1)} / ${supW.toFixed(2)}</div></div><div class="pf-arrow" style="color:var(--lo)">to room</div><div class="pf-node pf-room"><div class="pf-label">Room</div><div class="pf-val">${currT.toFixed(1)} / ${currW.toFixed(2)}</div></div><div class="pf-arrow" style="color:var(--lo)">target</div><div class="pf-node pf-sp"><div class="pf-label">Setpoint</div><div class="pf-val">${spT.toFixed(1)} / ${spW.toFixed(2)}</div></div></div>`;
+  con.innerHTML=fh;
+
+  // ── 1. CAN ROOM REACH SETPOINT? ──
+  con.innerHTML+=`<div class="sec">Can the Room Reach Setpoint?</div>`;
+  const d1=document.createElement('div');
+  const gap=supVsTargetW;
+  if(gap<=0.05){
+    d1.className='mcard mg';
+    d1.innerHTML=`<div class="mc-lbl">Supply W vs Target W</div>
+    <div class="mc-big vg">${supW.toFixed(2)} g/kg</div>
+    <div class="mc-exp">Supply air humidity ratio (<strong>${supW.toFixed(2)} g/kg</strong>) is at or below the target W (<strong>${spW.toFixed(2)} g/kg</strong>). This means the AHU is delivering air that is dry enough to progressively pull room humidity down to setpoint. The moisture content of the air entering the room is already at the right level — the room will converge toward setpoint over time as long as supply conditions are maintained. Gap to target: <strong>${Math.abs(gap).toFixed(2)} g/kg drier than needed</strong>.</div>
+    <span class="verdict vok">Supply dry enough to reach setpoint</span>`;
+  } else {
+    d1.className='mcard mr';
+    d1.innerHTML=`<div class="mc-lbl">Supply W vs Target W</div>
+    <div class="mc-big vr">${supW.toFixed(2)} g/kg</div>
+    <div class="mc-exp"><strong>Critical issue:</strong> Supply air humidity ratio (<strong>${supW.toFixed(2)} g/kg</strong>) is <strong>${gap.toFixed(2)} g/kg above</strong> the target W (${spW.toFixed(2)} g/kg). This means every cubic metre of air entering the room is carrying more moisture than the room needs — the AHU is actively making the room more humid, not less. The room <strong>cannot reach setpoint in this state</strong>, regardless of how long you wait. The coil must remove more moisture before this AHU can drive the room to target.
+    ${hasChw&&chwCanDrop?`<br><br>Chiller setpoint currently ${chwCur}°C — lowering toward minimum (${chwMin}°C) will help the coil achieve lower supply W.`:''}
+    ${valve>=95?'<br><br>Valve is fully open — the coil is receiving maximum chilled water. If supply W is still above target, consider lowering chiller setpoint or investigating coil condition.':''}</div>
+    <span class="verdict vbad">Room cannot reach setpoint — coil not dehumidifying enough</span>`;
+  }
+  con.appendChild(d1);
+
+  // ── 2. COIL PERFORMANCE ──
+  if(hasReturn){
+    con.innerHTML+=`<div class="sec">Coil Dehumidification Performance</div>`;
+    const d2=document.createElement('div');
+    const needed=Math.max(0,currW-spW);
+    if(coilDeltaW>1.0){
+      d2.className='mcard mc';
+      d2.innerHTML=`<div class="mc-lbl">Moisture Removed by Coil (Return W − Supply W)</div>
+      <div class="mc-big vc">${coilDeltaW.toFixed(2)} g/kg</div>
+      <div class="mc-exp">The coil is removing <strong>${coilDeltaW.toFixed(2)} g/kg</strong> of moisture per kilogram of dry air passing through. This is calculated as Return W (${retW.toFixed(2)} g/kg) minus Supply W (${supW.toFixed(2)} g/kg). ${coilDeltaW>=needed?`This is sufficient to close the room moisture gap (${needed.toFixed(2)} g/kg needed).`:`The room moisture gap is ${needed.toFixed(2)} g/kg — coil is working but room recovery depends on mixing time and room latent load.`}</div>
+      <span class="verdict vok">Coil actively dehumidifying</span>`;
+    } else if(coilDeltaW>0.05){
+      d2.className='mcard ma';
+      d2.innerHTML=`<div class="mc-lbl">Moisture Removed by Coil (Return W − Supply W)</div>
+      <div class="mc-big va">${coilDeltaW.toFixed(2)} g/kg</div>
+      <div class="mc-exp">The coil is removing only <strong>${coilDeltaW.toFixed(2)} g/kg</strong> per pass — mild dehumidification. The room moisture gap is <strong>${needed.toFixed(2)} g/kg</strong>, which requires sustained higher performance. Likely cause: coil surface temperature is not low enough below the air's dew point (${hasReturn?dpFn(retT,retRH).toFixed(1)+'°C dew point at return':''}), meaning limited condensation is occurring. Consider opening valve further${chwCanDrop?` or lowering chiller setpoint from ${chwCur}°C`:''}.</div>
+      <span class="verdict vwrn">Mild coil dehumidification — likely insufficient</span>`;
+    } else if(coilDeltaW<=0){
+      d2.className='mcard mr';
+      d2.innerHTML=`<div class="mc-lbl">Moisture Removed by Coil (Return W − Supply W)</div>
+      <div class="mc-big vr">${coilDeltaW.toFixed(2)} g/kg</div>
+      <div class="mc-exp"><strong>The coil is adding moisture, not removing it.</strong> Supply W (${supW.toFixed(2)} g/kg) is higher than Return W (${retW.toFixed(2)} g/kg) — air is picking up moisture as it passes through the AHU. The most common cause is <strong>condensate re-evaporation</strong>: moisture that previously condensed on the coil fins is being re-evaporated back into the airstream, typically when the valve is closing and the coil surface is warming up. Other causes include a blocked condensate drain pan (standing water re-evaporating) or a damaged coil. This is a maintenance issue that will prevent setpoint from being reached regardless of control actions.</div>
+      <span class="verdict vbad">Coil adding moisture — maintenance check required</span>`;
+    }
+    con.appendChild(d2);
+
+    // ── 3. HEATER / NET THERMAL EFFECT ──
+    con.innerHTML+=`<div class="sec">Heater Contribution &amp; Net Thermal Effect</div>`;
+    const d3=document.createElement('div');
+    const netDT=supT-retT;
+    if(Math.abs(netDT)<0.5){
+      d3.className='mcard ma';
+      d3.innerHTML=`<div class="mc-lbl">AHU Net Temperature Change (Supply T − Return T)</div>
+      <div class="mc-big va">${netDT>0?'+':''}${netDT.toFixed(1)}°C</div>
+      <div class="mc-exp">Supply air (${supT.toFixed(1)}°C) is leaving the AHU at nearly the same temperature it entered as return air (${retT.toFixed(1)}°C). The cooling from the coil and the heating from the heater (${heater}%) are approximately cancelling each other out. This can be intentional in a dehumidify-and-reheat strategy, but at ${heater}% heater output it may indicate${heater>20?' the heater is working against the coil — review if this is necessary':' the coil is not cooling aggressively — check valve position and CHW temperature'}.</div>`;
+    } else if(netDT>0){
+      d3.className='mcard mo';
+      d3.innerHTML=`<div class="mc-lbl">AHU Net Temperature Change (Supply T − Return T)</div>
+      <div class="mc-big vo">+${netDT.toFixed(1)}°C</div>
+      <div class="mc-exp">Supply air (${supT.toFixed(1)}°C) is <strong>${netDT.toFixed(1)}°C warmer</strong> than return air (${retT.toFixed(1)}°C). The AHU is net-heating the room. ${heater>5?`The heater (${heater}%) is the primary driver of this temperature rise. This is the expected state when operating in cooling + reheat mode — coil removes moisture, heater restores temperature.`:`Even with the heater at ${heater}%, net heating is occurring — verify coil cooling is not compromised by low valve position or high chilled water supply temperature.`}</div>`;
+    } else {
+      d3.className='mcard mb';
+      d3.innerHTML=`<div class="mc-lbl">AHU Net Temperature Change (Supply T − Return T)</div>
+      <div class="mc-big vb">${netDT.toFixed(1)}°C</div>
+      <div class="mc-exp">Supply air (${supT.toFixed(1)}°C) is <strong>${(-netDT).toFixed(1)}°C cooler</strong> than return air (${retT.toFixed(1)}°C). The AHU is net-cooling the room — coil cooling effect dominates. ${heater>0?`The heater is at ${heater}% but the coil is cooling more aggressively than the heater can offset.`:'The heater is off.'} This is the correct mode for initial dehumidification and temperature reduction.</div>`;
+    }
+    con.appendChild(d3);
+
+    // ── 4. RETURN vs ROOM ──
+    con.innerHTML+=`<div class="sec">Return Duct vs Room — Duct Integrity Check</div>`;
+    const d4=document.createElement('div');
+    const bigW=Math.abs(retVsRoomW)>0.4,bigT=Math.abs(retVsRoomT)>1.5;
+    if(!bigW&&!bigT){
+      d4.className='mcard mg';
+      d4.innerHTML=`<div class="mc-lbl">Return W − Room W</div>
+      <div class="mc-big vg">${retVsRoomW>0?'+':''}${retVsRoomW.toFixed(2)} g/kg</div>
+      <div class="mc-exp">Return air (W = ${retW.toFixed(2)} g/kg, T = ${retT.toFixed(1)}°C) closely matches room conditions (W = ${currW.toFixed(2)} g/kg, T = ${currT.toFixed(1)}°C). A small difference is expected due to sensor positions and mixing, but the gap here is within normal bounds. This confirms the return duct is not pulling in significant outside air infiltration or cross-contamination from adjacent zones.</div>
+      <span class="verdict vok">Return matches room — no duct mixing issues detected</span>`;
+    } else {
+      let reason='';
+      if(bigW&&retVsRoomW<0)reason=`Return W is ${Math.abs(retVsRoomW).toFixed(2)} g/kg <strong>lower than room W</strong>. The most likely explanation is that the return duct serves multiple zones, and air from drier adjacent spaces (corridors, unoccupied rooms) is blending into the return stream before it reaches the AHU. This means the AHU is sensing a mixed signal rather than the true room humidity. As a result, the AHU will under-react to the room's actual moisture load — it thinks the air is drier than it is.`;
+      else if(bigW&&retVsRoomW>0)reason=`Return W is ${Math.abs(retVsRoomW).toFixed(2)} g/kg <strong>higher than room W</strong>. This suggests moisture is entering the return duct from somewhere — possibly duct leakage drawing in humid air from ceiling voids or exterior, or a wet coil/drain pan near the return inlet.`;
+      else reason=`Return temperature is ${Math.abs(retVsRoomT).toFixed(1)}°C ${retVsRoomT>0?'warmer':'cooler'} than room temperature. This suggests thermal stratification in the room (hot/cool layers that are not mixing), or the return is picking up air from a different thermal zone than the room sensor.`;
+      d4.className='mcard ma';
+      d4.innerHTML=`<div class="mc-lbl">Return W − Room W</div>
+      <div class="mc-big va">${retVsRoomW>0?'+':''}${retVsRoomW.toFixed(2)} g/kg</div>
+      <div class="mc-exp">${reason}<br><br>Practical implication: if the return W is the input to your AHU control logic, the AHU is likely <strong>under-dehumidifying the room</strong>. Consider using the room sensor as primary feedback, not the return duct sensor.</div>
+      <span class="verdict vwrn">Return and room conditions differ — investigate duct arrangement</span>`;
+    }
+    con.appendChild(d4);
+  } else {
+    con.innerHTML+=`<p class="info-note" style="margin-top:10px">Return duct sensor not provided. Add return T and RH to unlock coil performance analysis, heater contribution assessment, and duct integrity check.</p>`;
+  }
+
+  // ── 5. OA MIXING ANALYSIS ──
+  if(hasOA&&oaT!=null){
+    con.innerHTML+=`<div class="sec">Outside Air Mixing Analysis</div>`;
+    const d5=document.createElement('div');
+    let oaClass,oaBig,oaBigCls,oaExp,oaVerdict;
+    if(oaHelpsDehumid&&!oaHurts){
+      oaClass='mcard mg';oaBig=oaW.toFixed(2);oaBigCls='mc-big vg';
+      oaExp=`Outside air (W = ${oaW.toFixed(2)} g/kg, T = ${oaT.toFixed(1)}°C) is drier than both the room (${currW.toFixed(2)} g/kg) and the setpoint target (${spW.toFixed(2)} g/kg). This is a <strong>free dehumidification opportunity</strong>. Increasing the OA fraction introduces naturally dry air, directly reducing room moisture without consuming chiller energy. The mixing benefit is approximately ${(currW-oaW).toFixed(2)} g/kg per unit of OA displacing room air. ${oaHelpsCool?`OA temperature (${oaT.toFixed(1)}°C) is also cooler than the room (${currT.toFixed(1)}°C), so more OA helps with both moisture and temperature.`:'OA temperature is close to or warmer than the room, so increased OA helps with moisture but not temperature.'}`;
+      oaVerdict='OA is beneficial — increase OA fraction if possible';
+    } else if(oaHurts){
+      oaClass='mcard mr';oaBig=oaW.toFixed(2);oaBigCls='mc-big vr';
+      oaExp=`Outside air (W = ${oaW.toFixed(2)} g/kg, T = ${oaT.toFixed(1)}°C) is <strong>more humid than the target W</strong> (${spW.toFixed(2)} g/kg). Every cubic metre of OA introduced adds latent load to the room that the coil must then remove. In high-humidity outdoor conditions, the OA system becomes an adversary to dehumidification. Keep OA at the minimum required by ventilation standards. ${oaHelpsCool&&oaT<spT?`OA temperature (${oaT.toFixed(1)}°C) is below setpoint, so there is a cooling benefit — but the moisture penalty outweighs it.`:''}`;
+      oaVerdict='OA is adding moisture — minimise to ventilation code minimum';
+    } else {
+      oaClass='mcard ma';oaBig=oaW.toFixed(2);oaBigCls='mc-big va';
+      oaExp=`Outside air (W = ${oaW.toFixed(2)} g/kg) is drier than the room (${currW.toFixed(2)} g/kg) but slightly above the target W (${spW.toFixed(2)} g/kg). OA can help bring room W down toward the target but cannot carry it all the way without mechanical dehumidification assisting. Use OA as a supplemental lever, not the primary one.`;
+      oaVerdict='OA partially helpful — use as supplement to coil';
+    }
+    d5.className=oaClass;
+    d5.innerHTML=`<div class="mc-lbl">Outside Air W vs Room W vs Target W</div><div class="${oaBigCls}">${oaBig} g/kg</div><div class="mc-exp">${oaExp}</div><span class="verdict ${oaHurts?'vbad':oaHelpsDehumid&&!oaHurts?'vok':'vwrn'}">${oaVerdict}</span>`;
+    con.appendChild(d5);
+  }
+
+  // ── 6. CHILLER SETPOINT SUMMARY ──
+  if(hasChw&&chwCur!=null){
+    con.innerHTML+=`<div class="sec">Chiller Setpoint Status</div>`;
+    const d6=document.createElement('div');
+    const atMin=!chwCanDrop,atMax=chwCur>=chwMax-0.3;
+    d6.className=atMin?'mcard ma':'mcard mc';
+    d6.innerHTML=`<div class="mc-lbl">Chilled Water Supply Setpoint</div>
+    <div class="mc-big ${atMin?'va':'vc'}">${chwCur}°C</div>
+    <div class="mc-exp">Current CHW setpoint: <strong>${chwCur}°C</strong>. Operating range: ${chwMin!=null?chwMin+'°C':'?'} (min) to ${chwMax!=null?chwMax+'°C':'?'} (max).
+    ${atMin?`CHW is at minimum setpoint — no further cooling capacity is available from the chiller. If the coil is still not achieving adequate dehumidification, the AHU coil capacity at this CHW temperature may be insufficient for the current load.`:`There is <strong>${chwMargin!=null?chwMargin.toFixed(1):'?'}°C of headroom</strong> available before the minimum limit. Each 1°C reduction in CHW setpoint typically lowers the coil surface temperature proportionally, enabling more condensation. This is the most impactful lever when the valve is already fully open.`}
+    </div>
+    <span class="verdict ${atMin?'vwrn':'vinfo'}">${atMin?'At minimum — no further cooling capacity':'CHW can be reduced if needed'}</span>`;
+    con.appendChild(d6);
+  }
+}
+// ════════════════════════════════════════════════
+// PSYCHROMETRIC CHART OVERLAY
+// ════════════════════════════════════════════════
+function redraw(){
+  const old=document.getElementById('og');if(old)old.remove();
+  const g=mkEl('g',{id:'og'});
+  if(!cs){SVG.appendChild(g);return;}
+  const{currT,currW,spT,spW}=cs;
+  if(currW>=W0&&currW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(currW),x2:M.left+CW,y2:wy(currW),stroke:'#5aabff','stroke-width':1,'stroke-dasharray':'5,3',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(currW)-4,'text-anchor':'end',fill:'#5aabff','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},currW.toFixed(1)));}
+  if(spW>=W0&&spW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(spW),x2:M.left+CW,y2:wy(spW),stroke:'#40d870','stroke-width':1,'stroke-dasharray':'4,2',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(spW)-4,'text-anchor':'end',fill:'#40d870','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},spW.toFixed(1)));}
+  g.appendChild(mkEl('line',{x1:tx(spT),y1:M.top,x2:tx(spT),y2:M.top+CH,stroke:'#40d870','stroke-width':.8,'stroke-dasharray':'2,4',opacity:.22}));
+  if(Math.abs(currW-spW)>.1){const y1=wy(Math.max(currW,spW)),y2=wy(Math.min(currW,spW));g.appendChild(mkEl('rect',{x:M.left,y:y1,width:CW,height:y2-y1,fill:currW>spW?'rgba(240,72,72,.05)':'rgba(64,216,112,.05)'}));}
+  if(mode===2&&ss){
+    const{supT,supW,retT,retW,hasReturn}=ss;
+    const inB=(t,w)=>t>=T0&&t<=T1&&w>=W0&&w<=W1;
+    if(hasReturn&&inB(retT,retW)&&inB(retT,supW)){
+      g.appendChild(mkEl('line',{x1:tx(retT).toFixed(1),y1:wy(retW).toFixed(1),x2:tx(retT).toFixed(1),y2:wy(supW).toFixed(1),stroke:'#5aabff','stroke-width':2,opacity:.7,'marker-end':'url(#arr-blue)'}));
+      g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(supW),r:4.5,fill:'none',stroke:'#5aabff','stroke-width':1.5,'stroke-dasharray':'3,2',opacity:.8}));
+    }
+    if(hasReturn&&inB(retT,supW)&&inB(supT,supW))g.appendChild(mkEl('line',{x1:tx(retT).toFixed(1),y1:wy(supW).toFixed(1),x2:tx(supT).toFixed(1),y2:wy(supW).toFixed(1),stroke:'#f04848','stroke-width':2,opacity:.7,'marker-end':'url(#arr-red)'}));
+    if(hasReturn&&inB(retT,retW)){g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:9,fill:'#ff8c30',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:5.5,fill:'#ff8c30'}));g.appendChild(mkEl('text',{x:tx(retT)+9,y:wy(retW)-6,fill:'#ff8c30','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`RET ${retT.toFixed(1)}°`));}
+    if(inB(supT,supW)){g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:9,fill:'#30e8d8',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:5.5,fill:'#30e8d8'}));g.appendChild(mkEl('text',{x:tx(supT)+9,y:wy(supW)-6,fill:'#30e8d8','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`SUP ${supT.toFixed(1)}°`));}
+  }
+  if(traj.length>1){const pts=traj.map(s=>`${tx(s.t).toFixed(1)},${wy(s.w).toFixed(1)}`).join(' ');g.appendChild(mkEl('polyline',{points:pts,fill:'none',stroke:'#f0b030','stroke-width':2,opacity:.65,'stroke-linejoin':'round'}));}
+  traj.forEach((s,i)=>{const cx=tx(s.t),cy=wy(s.w),isSel=i===sel;if(isSel)g.appendChild(mkEl('circle',{cx,cy,r:'9',fill:'none',stroke:'#f0b030','stroke-width':'2',class:'pr'}));g.appendChild(mkEl('circle',{cx,cy,r:isSel?6.5:5.5,fill:'#f0b030',stroke:isSel?'#fff':'#806010','stroke-width':isSel?1.5:1}));g.appendChild(mkEl('text',{x:cx+9,y:cy-5,fill:isSel?'#f0b030':'#806010','font-size':9.5,'font-family':'IBM Plex Mono,monospace','font-weight':isSel?'500':'400'},String(i+1)));});
+  if(spT>=T0&&spT<=T1&&currW>=W0&&currW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(currW),r:5.5,fill:'none',stroke:'#b088ff','stroke-width':1.8,'stroke-dasharray':'3,2',opacity:.85}));g.appendChild(mkEl('text',{x:tx(spT)+9,y:wy(currW)-4,fill:'#b088ff','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.85},pRHfn(spT,currW).toFixed(0)+'%?'));}
+  if(spT>=T0&&spT<=T1&&spW>=W0&&spW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:10,fill:'#40d870',opacity:.11}));g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:6,fill:'#40d870'}));g.appendChild(mkEl('text',{x:tx(spT)+10,y:wy(spW)-7,fill:'#40d870','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`SP:${spT}°/${cs.spRH}%`));}
+  const ccx=tx(currT),ccy=wy(Math.min(currW,W1));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:10,fill:'#5aabff',opacity:.1}));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:6,fill:'#5aabff'}));g.appendChild(mkEl('text',{x:ccx+10,y:ccy-7,fill:'#5aabff','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`${cs.currT}°/${cs.currRH}%`));
+  if(sel!==null&&traj[sel]){const s=traj[sel],bx=tx(s.t),by=wy(s.w),bw=148,bh=56;let lx=bx+14;if(lx+bw>M.left+CW)lx=bx-bw-14;let ly=by-14;if(ly+bh>M.top+CH)ly=by-bh-14;g.appendChild(mkEl('rect',{x:lx,y:ly,width:bw,height:bh,fill:'#0c0e0d',stroke:'#f0b030','stroke-width':1,rx:2}));g.appendChild(mkEl('text',{x:lx+8,y:ly+15,fill:'#f0b030','font-size':10,'font-family':'IBM Plex Mono,monospace','font-weight':'500'},`#${sel+1}  ${s.t}°C / ${s.rh}% RH`));g.appendChild(mkEl('text',{x:lx+8,y:ly+28,fill:'#a0b09c','font-size':9,'font-family':'IBM Plex Mono,monospace'},`W=${s.w.toFixed(2)}  ProjRH=${s.projRH.toFixed(1)}%`));g.appendChild(mkEl('text',{x:lx+8,y:ly+41,fill:'#566052','font-size':8,'font-family':'IBM Plex Mono,monospace'},`V:${s.valve}% Fan:${s.fan}% Heat:${s.heater}%`));}
+  SVG.appendChild(g);
+}
+
+// ════════════════════════════════════════════════
+// LOG
+// ════════════════════════════════════════════════
+function logState(){
+  if(!cs)return;
+  const{currT,currRH,currW,spW,pRH:prh,dW,dT}=cs;
+  const entry={t:currT,rh:currRH,w:currW,spW,projRH:prh,dW,dT,valve:parseInt(document.getElementById('valve').value),fan:parseInt(document.getElementById('fan').value),heater:parseInt(document.getElementById('heater').value)};
+  traj.push(entry);syncLog();updateSB();redraw();
+}
+function syncLog(){
+  const spRH=cs?cs.spRH:55;
+  const rows=traj.map((s,i)=>{
+    const wc=s.dW>0.15?'vr':s.dW<-0.15?'vb':'vg',pc=s.projRH>spRH+0.5?'vr':'vg';
+    return `<div class="te ${i===sel?'sel':''}" data-i="${i}"><div class="te-hd"><span class="te-num">#${i+1}</span><span class="te-main">${s.t}°C / ${s.rh}% RH</span></div><div class="te-grid"><div><span class="te-k">Room W</span><span class="te-v vb">${s.w.toFixed(2)} g/kg</span></div><div><span class="te-k">Target W</span><span class="te-v vg">${s.spW.toFixed(2)} g/kg</span></div><div><span class="te-k">ΔW</span><span class="te-v ${wc}">${(s.dW>=0?'+':'')+s.dW.toFixed(2)}</span></div><div><span class="te-k">Proj RH @ SP</span><span class="te-v ${pc}">${s.projRH.toFixed(1)}%</span></div></div><div class="te-ctrl">V:${s.valve}% · Fan:${s.fan}% · Heat:${s.heater}%</div></div>`;
+  }).join('') || '<div class="traj-empty">No states logged yet.</div>';
+  [document.getElementById('log-m1'),document.getElementById('log-m2')].forEach(el=>{if(el)el.innerHTML=rows;});
+  document.querySelectorAll('.te').forEach(e=>e.addEventListener('click',()=>{const i=parseInt(e.dataset.i);sel=(sel===i)?null:i;syncLog();redraw();}));
+}
+
+// ════════════════════════════════════════════════
+// STATUS BAR
+// ════════════════════════════════════════════════
+function updateSB(){
+  if(!cs)return;
+  const{currW,spW,pRH:prh,spRH,dW,dT}=cs;
+  const atSP=Math.abs(dW)<0.15&&Math.abs(dT)<0.5,dehumid=dW>0.15;
+  document.getElementById('sdot').className='sdot '+(atSP?'ok':dehumid?'bad':'warn');
+  document.getElementById('sb-status').textContent=atSP?'AT SETPOINT':dehumid?'DEHUMIDIFY':'HEAT / STABILISE';
+  document.getElementById('sb-cw').textContent=currW.toFixed(2)+' g/kg';
+  document.getElementById('sb-tw').textContent=spW.toFixed(2)+' g/kg';
+  document.getElementById('sb-proj').textContent=prh.toFixed(1)+'%'+(prh>spRH+0.5?' ▲':' ✓');
+  document.getElementById('sb-n').textContent=traj.length;
+}
+function blk(type,tClass,title,body,acts){
+  const typeMap={g:'dg',w:'dw',a:'da',i:'di',c:'dc'};
+  const d=document.createElement('div');d.className=`dblk ${typeMap[type]||'di'}`;
+  const tagMap={g:'✓ Status',w:'▲ Action',a:'⊗ Required',i:'ℹ Note',c:'⟳ Check'};
+  d.innerHTML=`<div class="dtag ${tClass}">${tagMap[type]}</div><div class="dtitle">${title}</div>`;
+  if(body)d.innerHTML+=`<div class="dtext">${body}</div>`;
+  if(acts&&acts.length){const al=document.createElement('div');al.className='dacts';acts.forEach(a=>{al.innerHTML+=`<div class="dact"><span class="darr">→</span><span>${a}</span></div>`;});d.appendChild(al);}
+  return d;
+}
+
+// ════════════════════════════════════════════════
+// TIME SERIES — CSV PARSING
+// ════════════════════════════════════════════════
+let tsData=null, tsHoverIdx=null;
+
+function parseCSVLine(line){
+  const result=[],re=/("([^"]*)"|([^,]*))(,|$)/g;
+  let m;
+  while((m=re.exec(line))!==null){result.push((m[2]!==undefined?m[2]:m[3]).trim());if(m[4]==='')break;}
+  return result;
+}
+
+function detectCol(headers,...keywords){
+  const kws=keywords.map(k=>k.toLowerCase());
+  return headers.findIndex(h=>{const hl=h.toLowerCase();return kws.every(k=>hl.includes(k));});
+}
+
+function parseTimestamp(raw){
+  // Handle multiple formats: ISO "2026-04-03 12:46:00", DD-MM-YY HH:MM, DD-MM-YYYY HH:MM
+  const s=raw.replace(/"/g,'').trim();
+  // Try ISO first
+  let d=new Date(s);
+  if(!isNaN(d.getTime()))return d;
+  // Try DD-MM-YY HH:MM or DD-MM-YYYY HH:MM
+  const m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})\s+(\d{1,2}):(\d{2})/);
+  if(m){
+    const day=parseInt(m[1]),mon=parseInt(m[2])-1;
+    let yr=parseInt(m[3]);
+    if(yr<100)yr+=2000;
+    d=new Date(yr,mon,day,parseInt(m[4]),parseInt(m[5]),0);
+    if(!isNaN(d.getTime()))return d;
+  }
+  return null;
+}
+
+function loadCSV(text){
+  const lines=text.trim().split('\n').filter(l=>l.trim());
+  if(lines.length<2)return;
+  const headers=parseCSVLine(lines[0]);
+  // Auto-detect core psychrometric columns
+  const aRHi=detectCol(headers,'area','hum');
+  const aTi=detectCol(headers,'area','temp');
+  const rRHi=detectCol(headers,'return','rh')>=0?detectCol(headers,'return','rh'):detectCol(headers,'return','hum');
+  const rTi=detectCol(headers,'return','temp');
+  const sRHi=detectCol(headers,'supply','rh')>=0?detectCol(headers,'supply','rh'):detectCol(headers,'supply','hum');
+  const sTi=detectCol(headers,'supply','temp');
+  if([aRHi,aTi,rRHi,rTi,sRHi,sTi].some(i=>i<0)){alert('Could not auto-detect all sensor columns. Expected columns for: Area Humidity, Area Temperature, Return Air RH/Humidity, Return Air Temperature, Supply Air RH/Humidity, Supply Air Temperature');return;}
+  // Auto-detect optional control variable columns
+  const valveI = detectCol(headers,'valve');
+  const fanPctI = detectCol(headers,'motor','percentage')>=0 ? detectCol(headers,'motor','percentage') : detectCol(headers,'fan','%')>=0 ? detectCol(headers,'fan','%') : detectCol(headers,'fan','speed');
+  const heaterI = detectCol(headers,'heater');
+  // OA sensor: different device, look for OA/outdoor/oath patterns
+  const oaTi = detectCol(headers,'oath','temp')>=0 ? detectCol(headers,'oath','temp') : detectCol(headers,'outdoor','temp')>=0 ? detectCol(headers,'outdoor','temp') : detectCol(headers,'oa','temp');
+  const oaRHi = detectCol(headers,'oath','hum')>=0 ? detectCol(headers,'oath','hum') : detectCol(headers,'outdoor','hum')>=0 ? detectCol(headers,'outdoor','hum') : detectCol(headers,'oa','hum');
+  const hasCtrl = valveI>=0 || fanPctI>=0 || heaterI>=0;
+  const hasOAcol = oaTi>=0 && oaRHi>=0;
+  // Extract AHU name from first detected column
+  const ahuName=headers[aRHi].replace(/\s*-?\s*\(.*\)/g,'').replace(/B-\w+\s+/,'').trim()||'Unknown AHU';
+  // Parse rows
+  const data=[];
+  let t0=null,t1=null;
+  for(let i=1;i<lines.length;i++){
+    const cols=parseCSVLine(lines[i]);
+    const sf=v=>{try{const f=parseFloat(String(v).replace(/"/g,'').trim());return isNaN(f)?null:f;}catch{return null;}};
+    const aT=sf(cols[aTi]),aRH=sf(cols[aRHi]),rT=sf(cols[rTi]),rRH=sf(cols[rRHi]),sT=sf(cols[sTi]),sRH=sf(cols[sRHi]);
+    if([aT,aRH,rT,rRH,sT,sRH].some(v=>v===null))continue;
+    const ts=parseTimestamp(cols[0]);
+    if(!ts)continue;
+    const epoch=ts.getTime();
+    if(!t0||epoch<t0)t0=epoch;
+    if(!t1||epoch>t1)t1=epoch;
+    const aW=Wfn(aT,aRH),rW=Wfn(rT,rRH),sW=Wfn(sT,sRH);
+    const row={epoch,ts,aT,aRH,rT,rRH,sT,sRH,aW,rW,sW,coilDW:rW-sW,
+      valve:valveI>=0?sf(cols[valveI]):null,
+      fanPct:fanPctI>=0?sf(cols[fanPctI]):null,
+      heater:heaterI>=0?sf(cols[heaterI]):null,
+      oaT:oaTi>=0?sf(cols[oaTi]):null,
+      oaRH:oaRHi>=0?sf(cols[oaRHi]):null};
+    if(row.oaT!==null&&row.oaRH!==null)row.oaW=Wfn(row.oaT,row.oaRH);
+    data.push(row);
+  }
+  if(!data.length){alert('No valid data rows found.');return;}
+  data.sort((a,b)=>a.epoch-b.epoch);
+  tsData={data,ahuName,t0,t1,nRows:data.length,hasCtrl,hasOAcol};
+  // Update UI
+  document.getElementById('upload-zone').className='upload-zone file-loaded';
+  document.getElementById('upload-icon').textContent='✓';
+  document.getElementById('upload-text').innerHTML=`<strong>${data.length} rows loaded</strong><br>${ahuName}`;
+  document.getElementById('ts-file-info').style.display='block';
+  document.getElementById('ts-ahu-name').textContent=ahuName;
+  const fmt=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('ts-time-range').textContent=`${fmt(new Date(t0))} → ${fmt(new Date(t1))}`;
+  document.getElementById('ts-rows').textContent=`${data.length} minutes`;
+  const ctrlFound=[];
+  if(valveI>=0)ctrlFound.push('Valve');
+  if(fanPctI>=0)ctrlFound.push('Fan%');
+  if(heaterI>=0)ctrlFound.push('Heater');
+  document.getElementById('ts-ctrl-status').textContent=ctrlFound.length?ctrlFound.join(', '):'Not found';
+  document.getElementById('ts-ctrl-status').style.color=ctrlFound.length?'var(--green)':'var(--lo)';
+  document.getElementById('ts-oa-status').textContent=hasOAcol?'Detected':'Not found';
+  document.getElementById('ts-oa-status').style.color=hasOAcol?'var(--green)':'var(--lo)';
+  if(valveI>=0)document.getElementById('tog-valve').checked=true;
+  if(fanPctI>=0)document.getElementById('tog-fan').checked=true;
+  if(heaterI>=0)document.getElementById('tog-heater').checked=true;
+  if(hasOAcol)document.getElementById('tog-oaT').checked=true;
+  const spT=parseFloat(document.getElementById('ts-sp-t').value)||20;
+  const spRH=parseFloat(document.getElementById('ts-sp-rh').value)||55;
+  analyzeTs(spT,spRH);
+  drawTs();
+  document.getElementById('sb-ts-info').textContent=`${data.length} pts · ${ahuName}`;
+}
+
+// ════════════════════════════════════════════════
+// TIME SERIES — ANALYSIS
+// ════════════════════════════════════════════════
+function mean(arr){return arr.reduce((a,b)=>a+b,0)/arr.length;}
+function pct(arr,fn){return Math.round(100*arr.filter(fn).length/arr.length);}
+
+function analyzeTs(spT,spRH){
+  if(!tsData)return;
+  const{data,ahuName}=tsData;
+  const targetW=Wfn(spT,spRH);
+  // Compute derived
+  const aWs=data.map(d=>d.aW), rWs=data.map(d=>d.rW), sWs=data.map(d=>d.sW);
+  const coilDWs=data.map(d=>d.coilDW);
+  const projRHs=data.map(d=>pRHfn(spT,d.aW));
+  // Direction changes for oscillation
+  const dirs=aWs.map((v,i)=>i===0?0:v-aWs[i-1]>0.01?1:v-aWs[i-1]<-0.01?-1:0);
+  let reversals=0;for(let i=1;i<dirs.length;i++)if(dirs[i]!==0&&dirs[i-1]!==0&&dirs[i]!==dirs[i-1])reversals++;
+  const revPerHour=(reversals/(data.length/60)).toFixed(1);
+  // Hourly averages
+  const hourlyMap={};
+  data.forEach(d=>{const h=d.ts.getHours();if(!hourlyMap[h])hourlyMap[h]=[];hourlyMap[h].push(d);});
+  // Summary pills
+  const supEffPct=pct(sWs,v=>v<mean(aWs));// % time supply drier than room
+  const spAchPct=pct(projRHs,v=>v<=spRH);
+  const coilAddPct=pct(coilDWs,v=>v<0);
+  const meanCoilDW=mean(coilDWs);
+  const meanAreaW=mean(aWs);
+  const meanSupW=mean(sWs);
+  const supBelowTargetPct=pct(sWs,v=>v<targetW);
+  const pills=[
+    {lbl:'Setpoint Achieved',val:spAchPct+'%',sub:`proj RH ≤ ${spRH}% at ${spT}°C`,cls:spAchPct>50?'vg':spAchPct>10?'va':'vr'},
+    {lbl:'Supply Drier than Room',val:pct(sWs,v=>v<mean(aWs))+'%',sub:'AHU actually drying room',cls:pct(sWs,v=>v<mean(aWs))>60?'vg':'vr'},
+    {lbl:'Mean Room W',val:meanAreaW.toFixed(2),sub:`target: ${targetW.toFixed(2)} g/kg`,cls:meanAreaW<targetW+0.3?'vg':meanAreaW<targetW+1?'va':'vr'},
+    {lbl:'Mean Coil ΔW',val:meanCoilDW.toFixed(2),sub:'g/kg removed per pass',cls:meanCoilDW>1?'vg':meanCoilDW>0.3?'va':'vr'},
+    {lbl:'Coil Adding Moisture',val:coilAddPct+'%',sub:'of the time (coil DW < 0)',cls:coilAddPct<10?'vg':coilAddPct<30?'va':'vr'},
+    {lbl:'Control Oscillation',val:revPerHour+'/hr',sub:'W direction reversals',cls:parseFloat(revPerHour)<5?'vg':parseFloat(revPerHour)<12?'va':'vr'},
+  ];
+  document.getElementById('ts-pills').innerHTML=pills.map(p=>`<div class="pill"><div class="pill-lbl">${p.lbl}</div><div class="pill-val ${p.cls}">${p.val}</div><div class="pill-sub">${p.sub}</div></div>`).join('');
+  // FINDINGS
+  const fc=document.getElementById('ts-findings');fc.innerHTML='';
+  // Finding 1 — Setpoint achievement
+  const f1=document.createElement('div');
+  if(spAchPct===0){
+    f1.className='finding fa';f1.innerHTML=`<div class="f-tag ta">⊗ Critical Finding</div><div class="f-title">Room Never Reached Setpoint</div><div class="f-text">In the entire ${data.length}-minute dataset, the projected RH at ${spT}°C was <strong>never at or below ${spRH}%</strong>. The room missed setpoint <strong>100% of the time</strong>. The closest approach was <strong>${Math.min(...projRHs).toFixed(1)}%</strong> — still ${(Math.min(...projRHs)-spRH).toFixed(1)}% above target. This is a systemic failure, not a transient issue.</div>`;
+  } else if(spAchPct<30){
+    f1.className='finding fa';f1.innerHTML=`<div class="f-tag ta">⊗ Critical Finding</div><div class="f-title">Setpoint Achieved Only ${spAchPct}% of Time</div><div class="f-text">The room reached target conditions only <strong>${spAchPct}%</strong> of the time. Average projected RH at ${spT}°C was <strong>${mean(projRHs).toFixed(1)}%</strong> vs target ${spRH}%. Significant dehumidification capacity issue.</div>`;
+  } else {
+    f1.className='finding fg';f1.innerHTML=`<div class="f-tag tg">✓ Setpoint Performance</div><div class="f-title">Setpoint Achieved ${spAchPct}% of Time</div><div class="f-text">Room was at or below target conditions for <strong>${spAchPct}%</strong> of the dataset. Mean projected RH: ${mean(projRHs).toFixed(1)}%.</div>`;
+  }
+  fc.appendChild(f1);
+  // Finding 2 — Coil
+  const f2=document.createElement('div');
+  const coilOk=meanCoilDW>0.8&&coilAddPct<20;
+  if(coilAddPct>40||meanCoilDW<0.2){
+    f2.className='finding fa';f2.innerHTML=`<div class="f-tag ta">⊗ Root Cause — Coil Not Dehumidifying</div><div class="f-title">Coil Is Adding Moisture ${coilAddPct}% of Time</div><div class="f-text">Mean coil dehumidification = <strong>${meanCoilDW.toFixed(2)} g/kg</strong>. For the room W gap of <strong>${(meanAreaW-targetW).toFixed(2)} g/kg</strong>, coil needs to deliver at least <strong>${(meanAreaW-targetW+0.5).toFixed(1)} g/kg</strong> consistently. Possible causes: valve not opening sufficiently, coil surface above dew point, fan speed too high (bypass), chilled water supply temperature too warm, or coil fouling.</div>`;
+  } else if(coilAddPct>20||meanCoilDW<0.5){
+    f2.className='finding fw';f2.innerHTML=`<div class="f-tag tw">▲ Coil Performance Below Requirement</div><div class="f-title">Mean Coil ΔW = ${meanCoilDW.toFixed(2)} g/kg — Insufficient</div><div class="f-text">Coil dehumidifying ${100-coilAddPct}% of time but not strongly enough. To close the room W gap (${(meanAreaW-targetW).toFixed(2)} g/kg), sustained supply W below ${targetW.toFixed(2)} g/kg is needed. Supply W only achieved this <strong>${supBelowTargetPct}%</strong> of the time.</div>`;
+  } else {
+    f2.className='finding fg';f2.innerHTML=`<div class="f-tag tg">✓ Coil Performing</div><div class="f-title">Mean Coil ΔW = ${meanCoilDW.toFixed(2)} g/kg</div><div class="f-text">Coil is actively dehumidifying and adding moisture only ${coilAddPct}% of the time.</div>`;
+  }
+  fc.appendChild(f2);
+  // Finding 3 — Supply W adequacy
+  const f3=document.createElement('div');
+  if(supBelowTargetPct<30){
+    f3.className='finding fa';f3.innerHTML=`<div class="f-tag ta">⊗ Supply Air Too Humid</div><div class="f-title">Supply W Below Target Only ${supBelowTargetPct}% of Time</div><div class="f-text">For the room to reach ${spT}°C / ${spRH}% (W = ${targetW.toFixed(2)} g/kg), supply air must <em>consistently</em> carry less moisture than target. Mean supply W = <strong>${meanSupW.toFixed(2)} g/kg</strong> vs target ${targetW.toFixed(2)} g/kg. The AHU is delivering moist air to the room most of the time — dehumidification at the coil is the primary fix required.</div>`;
+  } else if(supBelowTargetPct<65){
+    f3.className='finding fw';f3.innerHTML=`<div class="f-tag tw">▲ Supply W Inadequate — Inconsistent</div><div class="f-title">Supply W Dry Enough Only ${supBelowTargetPct}% of Time</div><div class="f-text">Supply occasionally reaches adequate dryness but not consistently. Mean supply W = ${meanSupW.toFixed(2)} g/kg. Target is ${targetW.toFixed(2)} g/kg. The control needs to maintain supply W below target more reliably.</div>`;
+  } else {
+    f3.className='finding fg';f3.innerHTML=`<div class="f-tag tg">✓ Supply W Adequate</div><div class="f-title">Supply Dry Enough ${supBelowTargetPct}% of Time</div><div class="f-text">Supply W below target W frequently. Mean supply W = ${meanSupW.toFixed(2)} g/kg.</div>`;
+  }
+  fc.appendChild(f3);
+  // Finding 4 — Oscillation
+  const f4=document.createElement('div');
+  const revN=parseFloat(revPerHour);
+  if(revN>15){
+    f4.className='finding fa';f4.innerHTML=`<div class="f-tag ta">⊗ System Hunting — High Oscillation</div><div class="f-title">${revPerHour} Direction Reversals per Hour in Room W</div><div class="f-text">The room moisture level is oscillating rapidly — changing direction <strong>${reversals} times</strong> in ${data.length} minutes. This indicates the control loop is hunting rather than converging. Probable causes: valve deadband too tight, control loop gain too high, integral windup, or very short actuator update cycles. The system is burning energy cycling rather than holding a stable condition.</div>`;
+  } else if(revN>8){
+    f4.className='finding fw';f4.innerHTML=`<div class="f-tag tw">▲ Moderate Oscillation</div><div class="f-title">${revPerHour} Reversals / Hour in Room W</div><div class="f-text">Some oscillation in room W is normal, but ${revPerHour}/hr suggests the control loop is not well-tuned. Consider widening the control deadband slightly.</div>`;
+  } else {
+    f4.className='finding fg';f4.innerHTML=`<div class="f-tag tg">✓ Control Stability</div><div class="f-title">${revPerHour} Reversals / Hour — Stable</div><div class="f-text">Room W is not oscillating excessively. Control loop appears reasonably stable.</div>`;
+  }
+  fc.appendChild(f4);
+  // Finding 5 — High load hours
+  const highLoadHrs=Object.entries(hourlyMap).filter(([h,rows])=>mean(rows.map(d=>d.aW))>targetW+0.8).map(([h])=>parseInt(h)).sort((a,b)=>a-b);
+  if(highLoadHrs.length>0){
+    const f5=document.createElement('div');
+    const peakHr=Object.entries(hourlyMap).sort((a,b)=>mean(b[1].map(d=>d.aW))-mean(a[1].map(d=>d.aW)))[0];
+    const peakW=mean(peakHr[1].map(d=>d.aW));
+    f5.className='finding fw';f5.innerHTML=`<div class="f-tag tw">▲ Elevated Load Periods Detected</div><div class="f-title">High Moisture Hours: ${highLoadHrs.map(h=>h+':00').join(', ')}</div><div class="f-text">These hours show room W more than 0.8 g/kg above target — likely occupied periods with active latent load (personnel, procedures). Peak was at <strong>${peakHr[0]}:00</strong> with mean W = <strong>${peakW.toFixed(2)} g/kg</strong>. The AHU needs stronger pre-cooling / valve opening leading into these periods. If the AHU cannot recover during off-peak hours, coil capacity is the binding constraint.</div>`;
+    fc.appendChild(f5);
+  }
+  // Finding 6 — Return vs Room
+  const retRoomDiffs=data.map(d=>d.rW-d.aW);
+  const bigRetDiff=Math.abs(mean(retRoomDiffs))>0.4;
+  if(bigRetDiff){
+    const f6=document.createElement('div');
+    const avgDiff=mean(retRoomDiffs);
+    f6.className='finding fw';f6.innerHTML=`<div class="f-tag tw">▲ Return vs Room Mismatch</div><div class="f-title">Mean Return W ${avgDiff>0?'Higher':'Lower'} Than Room by ${Math.abs(avgDiff).toFixed(2)} g/kg</div><div class="f-text">${avgDiff<0?'Return air is consistently drier than the room. Most likely cause: shared return duct serving multiple drier zones (corridors, adjacent rooms). The AHU receives blended air and underestimates room moisture. This causes under-dehumidification.':'Return air is wetter than the room. Possible duct leakage — outside air or moisture infiltrating the return duct network.'} Consider using the room sensor as primary control feedback, not the return sensor.</div>`;
+    fc.appendChild(f6);
+  }
+  // Hourly heatmap
+  const fh=document.createElement('div');
+  fh.innerHTML=`<div class="f-tag ti" style="margin-top:14px;font-family:var(--mono);font-size:9px;letter-spacing:2px;">Hourly Room W vs Target (${targetW.toFixed(2)} g/kg)</div>`;
+  const hm=document.createElement('div');hm.className='heatmap';
+  for(let h=0;h<24;h++){
+    const hrs=hourlyMap[h]||[];
+    const avgW=hrs.length?mean(hrs.map(d=>d.aW)):null;
+    const gap=avgW!==null?avgW-targetW:null;
+    let bg='#131913',tc='#384038';
+    if(gap!==null){
+      if(gap>1.5)bg='rgba(240,72,72,0.35)',tc='#f04848';
+      else if(gap>0.8)bg='rgba(240,72,72,0.2)',tc='#f08080';
+      else if(gap>0.3)bg='rgba(240,176,48,0.2)',tc='#f0b030';
+      else if(gap>0)bg='rgba(240,176,48,0.1)',tc='#a07010';
+      else bg='rgba(64,216,112,0.15)',tc='#40d870';
+    }
+    hm.innerHTML+=`<div class="hm-cell" style="background:${bg}"><div class="hm-val" style="color:${tc}">${avgW!==null?avgW.toFixed(1):'—'}</div><div class="hm-hr">${String(h).padStart(2,'0')}</div></div>`;
+  }
+  fh.appendChild(hm);
+  fh.innerHTML+=`<div class="hm-legend"><span><span class="hm-swatch" style="background:rgba(240,72,72,0.35)"></span> W > target+1.5</span><span><span class="hm-swatch" style="background:rgba(240,176,48,0.2)"></span> W > target+0.3</span><span><span class="hm-swatch" style="background:rgba(64,216,112,0.15)"></span> W ≤ target</span></div>`;
+  fc.appendChild(fh);
+
+  // ── Finding 7: Control variable analysis (only if present) ──
+  const hasValve=data.some(d=>d.valve!=null);
+  const hasFan=data.some(d=>d.fanPct!=null);
+  const hasHeater=data.some(d=>d.heater!=null);
+  const hasOAts=data.some(d=>d.oaT!=null);
+
+  if(hasValve||hasFan||hasHeater){
+    const f7=document.createElement('div');
+    const lines=[];
+
+    if(hasValve){
+      const valves=data.filter(d=>d.valve!=null).map(d=>d.valve);
+      const meanValve=mean(valves);
+      const valveFull=pct(valves,v=>v>=95);
+      const valveZero=pct(valves,v=>v<=5);
+      // Correlate: when valve is high, is coil DW also high?
+      const highValveRows=data.filter(d=>d.valve!=null&&d.valve>=70);
+      const lowValveRows=data.filter(d=>d.valve!=null&&d.valve<=30);
+      const coilDwHigh=highValveRows.length?mean(highValveRows.map(d=>d.coilDW)):null;
+      const coilDwLow=lowValveRows.length?mean(lowValveRows.map(d=>d.coilDW)):null;
+      lines.push(`<strong>Valve Position:</strong> Mean ${meanValve.toFixed(0)}%, fully open (≥95%) for ${valveFull}% of time, fully closed (≤5%) for ${valveZero}% of time.`);
+      if(valveFull>30)lines.push(`Valve was at or above 95% for <strong>${valveFull}% of the dataset</strong> — the AHU was demanding maximum chilled water flow for most of the period. This suggests the coil is operating at capacity, yet if room W remained above target, the issue lies upstream (chilled water supply temperature, coil fouling, or system capacity).`);
+      if(coilDwHigh!==null&&coilDwLow!==null){
+        const response=coilDwHigh-coilDwLow;
+        if(response>0.3)lines.push(`Coil ΔW is higher when valve is open (${coilDwHigh.toFixed(2)} g/kg) vs closed (${coilDwLow.toFixed(2)} g/kg) — valve is having the expected effect on dehumidification.`);
+        else lines.push(`⚠ Coil ΔW is similar whether the valve is open (${coilDwHigh.toFixed(2)} g/kg) or closed (${coilDwLow.toFixed(2)} g/kg). The valve may not be effectively controlling chilled water flow — check valve actuator, stuck valve, or bypassing.`);
+      }
+    }
+
+    if(hasFan){
+      const fans=data.filter(d=>d.fanPct!=null).map(d=>d.fanPct);
+      const meanFan=mean(fans);
+      const fanRange=Math.max(...fans)-Math.min(...fans);
+      lines.push(`<strong>Fan Speed:</strong> Mean ${meanFan.toFixed(0)}%. ${fanRange<5?'Fan speed was essentially constant throughout the period — no speed modulation detected.':'Fan speed varied by '+fanRange.toFixed(0)+'% over the period.'}`);
+      if(meanFan>80)lines.push(`High fan speed (mean ${meanFan.toFixed(0)}%) increases airflow but reduces coil contact time, potentially limiting dehumidification. If coil DW is insufficient, reducing fan speed is worth testing.`);
+    }
+
+    if(hasHeater){
+      const heaters=data.filter(d=>d.heater!=null).map(d=>d.heater);
+      const meanHeater=mean(heaters);
+      const heaterActive=pct(heaters,v=>v>5);
+      const heaterHigh=pct(heaters,v=>v>=80);
+      lines.push(`<strong>Heater:</strong> Active (>5%) for ${heaterActive}% of time. Mean output ${meanHeater.toFixed(0)}%. High (≥80%) for ${heaterHigh}% of time.`);
+      if(heaterActive>50&&coilAddPct>30)lines.push(`⚠ Heater was active while the coil was also adding moisture — this is the least efficient state, adding heat AND adding moisture simultaneously. The reheat strategy should only engage after dehumidification is confirmed.`);
+      if(heaterActive<5)lines.push(`Heater was essentially off throughout. The AHU is operating on cooling and dehumidification only — no active reheat.`);
+    }
+
+    f7.className='finding fi';
+    f7.innerHTML=`<div class="f-tag ti">Control Variable Analysis</div><div class="f-title">Valve, Fan &amp; Heater Behaviour</div><div class="f-text">${lines.map(l=>`<p style="margin-bottom:6px">${l}</p>`).join('')}</div>`;
+    fc.appendChild(f7);
+  }
+
+  if(hasOAts){
+    const f8=document.createElement('div');
+    const oaTs=data.filter(d=>d.oaT!=null).map(d=>d.oaT);
+    const oaWs=data.filter(d=>d.oaW!=null).map(d=>d.oaW);
+    const meanOaT=mean(oaTs), meanOaW=oaWs.length?mean(oaWs):null;
+    const oaDryPct=oaWs.length?pct(oaWs,v=>v<targetW):null;
+    const oaLines=[];
+    oaLines.push(`Outside air temperature over this period: mean <strong>${meanOaT.toFixed(1)}°C</strong>, range ${Math.min(...oaTs).toFixed(1)}–${Math.max(...oaTs).toFixed(1)}°C.`);
+    if(meanOaW!==null){
+      oaLines.push(`Outside air humidity ratio: mean <strong>${meanOaW.toFixed(2)} g/kg</strong> vs room target ${targetW.toFixed(2)} g/kg.`);
+      if(oaDryPct>60)oaLines.push(`OA was drier than target W for <strong>${oaDryPct}%</strong> of the time — this period had favourable outdoor conditions where increasing OA fraction would have reduced the mechanical dehumidification load.`);
+      else if(oaDryPct<20)oaLines.push(`OA was drier than target W for only <strong>${oaDryPct}%</strong> of the time — outdoor humidity was high throughout this period, making OA a latent load contributor. Minimising OA to code minimum was the correct strategy.`);
+      else oaLines.push(`OA was drier than target W for ${oaDryPct}% of the time — mixed conditions. OA could be used as a supplemental dehumidification lever during the favourable periods.`);
+    }
+    f8.className='finding fi';
+    f8.innerHTML=`<div class="f-tag ti">Outside Air Conditions</div><div class="f-title">OA Temperature &amp; Humidity Over Period</div><div class="f-text">${oaLines.map(l=>`<p style="margin-bottom:6px">${l}</p>`).join('')}</div>`;
+    fc.appendChild(f8);
+  }
+}
+
+// ════════════════════════════════════════════════
+// TIME SERIES — CANVAS CHART
+// ════════════════════════════════════════════════
+function resizeTs(){
+  const canvas=document.getElementById('ts-canvas');
+  const parent=canvas.parentElement;
+  canvas.width=parent.clientWidth-24;
+  canvas.height=parent.clientHeight-44;
+}
+
+function drawTs(){
+  const canvas=document.getElementById('ts-canvas');
+  if(!canvas.width)resizeTs();
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const spT=parseFloat(document.getElementById('ts-sp-t').value)||20;
+  const spRH=parseFloat(document.getElementById('ts-sp-rh').value)||55;
+  const targetW=Wfn(spT,spRH);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0a0c0a';ctx.fillRect(0,0,W,H);
+  if(!tsData){
+    ctx.fillStyle='#384038';ctx.font='14px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('Upload a CSV file to view time series',W/2,H/2);return;
+  }
+  const{data}=tsData;
+  const showAW=document.getElementById('tog-aW').checked;
+  const showRW=document.getElementById('tog-rW').checked;
+  const showSW=document.getElementById('tog-sW').checked;
+  const showCoil=document.getElementById('tog-coil').checked;
+  const showT=document.getElementById('tog-T').checked;
+  const showOaT=document.getElementById('tog-oaT').checked;
+  const showValve=document.getElementById('tog-valve').checked;
+  const showFan=document.getElementById('tog-fan').checked;
+  const showHeater=document.getElementById('tog-heater').checked;
+  const hasCtrlData=tsData.hasCtrl&&(showValve||showFan||showHeater);
+
+  // Layout: if control panel visible, split vertically — top 65% W chart, bottom 35% control chart
+  const Mleft=52,Mright=75,Mtop=14,Mbottom=28;
+  const ctrlPanelH = hasCtrlData ? Math.round(H*0.30) : 0;
+  const dividerH = hasCtrlData ? 10 : 0;
+  const wPanelH = H - Mtop - Mbottom - ctrlPanelH - dividerH;
+  const cw=W-Mleft-Mright;
+  const t0=tsData.t0,t1=tsData.t1;
+  const cx=epoch=>Mleft+(epoch-t0)/(t1-t0)*cw;
+
+  // ── W/T PANEL ──
+  const ch=wPanelH;
+  const allWvals=[...data.map(d=>d.aW),...data.map(d=>d.rW),...data.map(d=>d.sW)];
+  const wMin=Math.floor(Math.min(...allWvals)-0.5);
+  const wMax=Math.ceil(Math.max(...allWvals)+0.5);
+  const tMin=Math.floor(Math.min(...data.map(d=>d.aT))-1);
+  const tMax=Math.ceil(Math.max(...data.map(d=>d.aT))+1);
+  const cyw=w=>Mtop+ch-(w-wMin)/(wMax-wMin)*ch;
+  const cyt=t=>Mtop+ch-(t-tMin)/(tMax-tMin)*ch;
+
+  // W grid
+  ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+  for(let w=wMin;w<=wMax;w+=0.5){
+    const y=cyw(w);if(y<Mtop||y>Mtop+ch)continue;
+    ctx.beginPath();ctx.moveTo(Mleft,y);ctx.lineTo(Mleft+cw,y);ctx.stroke();
+    if(w===Math.round(w)){ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(w.toFixed(1),Mleft-4,y+3);}
+  }
+  // Time axis gridlines (shared)
+  const msPerHour=3600000;
+  const totalMs=t1-t0;
+  const tickInterval = totalMs<=4*3600000 ? 3600000/4 : totalMs<=24*3600000 ? 4*msPerHour : 12*msPerHour;
+  const startTick=new Date(t0);startTick.setMinutes(Math.ceil(startTick.getMinutes()/15)*15,0,0);
+  for(let t=startTick.getTime();t<=t1;t+=tickInterval){
+    if(t<t0)continue;
+    const x=cx(t);
+    ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+    ctx.beginPath();ctx.moveTo(x,Mtop);ctx.lineTo(x,Mtop+ch+(hasCtrlData?dividerH+ctrlPanelH:0));ctx.stroke();
+    const d=new Date(t);
+    ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='center';
+    const label=totalMs<=4*3600000?`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:`${String(d.getHours()).padStart(2,'0')}:00`;
+    ctx.fillText(label,x,Mtop+ch+(hasCtrlData?dividerH+ctrlPanelH:0)+Mbottom-18);
+  }
+  ctx.strokeStyle='#222e22';ctx.lineWidth=1;ctx.strokeRect(Mleft,Mtop,cw,ch);
+
+  // Target W line
+  const tyW=cyw(targetW);
+  ctx.strokeStyle='#40d870';ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.globalAlpha=0.6;
+  ctx.beginPath();ctx.moveTo(Mleft,tyW);ctx.lineTo(Mleft+cw,tyW);ctx.stroke();
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  ctx.fillStyle='#40d870';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Target W '+targetW.toFixed(1),Mleft+cw+3,tyW+3);
+
+  // Temperature axis (right) and OAT
+  if(showT||showOaT){
+    const allTs=[...data.map(d=>d.aT)];
+    if(showOaT)data.forEach(d=>{if(d.oaT!=null)allTs.push(d.oaT);});
+    const tMinR=Math.floor(Math.min(...allTs)-1),tMaxR=Math.ceil(Math.max(...allTs)+2);
+    const cytR=t=>Mtop+ch-(t-tMinR)/(tMaxR-tMinR)*ch;
+    for(let t=tMinR;t<=tMaxR;t+=2){
+      const y=cytR(t);if(y<Mtop||y>Mtop+ch)continue;
+      ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
+      ctx.fillText(t+'°',Mleft+cw+3,y+3);
+    }
+    if(showT){
+      ctx.strokeStyle='rgba(160,176,156,0.35)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.beginPath();data.forEach((d,i)=>{const x=cx(d.epoch),y=cytR(d.aT);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    if(showOaT){
+      ctx.strokeStyle='rgba(144,176,48,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+      ctx.beginPath();let first=true;
+      data.forEach(d=>{if(d.oaT==null)return;const x=cx(d.epoch),y=cytR(d.oaT);first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);});
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    ctx.fillStyle='rgba(160,176,156,0.5)';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('T°C',Mleft+cw+3,Mtop+8);
+    if(showOaT){ctx.fillStyle='rgba(144,176,48,0.7)';ctx.fillText('OAT',Mleft+cw+3,Mtop+18);}
+  }
+
+  // Coil DW mini bars (at bottom of W panel)
+  if(showCoil){
+    const barH=Math.min(ch*0.12,20);
+    const barY=Mtop+ch-barH;
+    const coilRange=Math.max(Math.abs(Math.min(...data.map(d=>d.coilDW))),Math.max(...data.map(d=>d.coilDW)),1);
+    ctx.fillStyle='rgba(20,20,20,0.6)';ctx.fillRect(Mleft,barY,cw,barH);
+    data.forEach(d=>{
+      const x=cx(d.epoch),barLen=(d.coilDW/coilRange)*(barH*0.9);
+      ctx.fillStyle=d.coilDW>0?'rgba(48,232,216,0.55)':'rgba(240,72,72,0.55)';
+      if(barLen>0)ctx.fillRect(x-0.5,barY+barH-barLen,1,barLen);
+      else ctx.fillRect(x-0.5,barY+barH,1,-barLen);
+    });
+    ctx.fillStyle='#566052';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';
+    ctx.fillText('Coil ΔW  ▲=removing  ▼=adding',Mleft+3,barY+8);
+  }
+
+  // W lines
+  function drawLine(arr,color,alpha,lw){ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.globalAlpha=alpha;ctx.beginPath();arr.forEach((d,i)=>{const x=cx(d.epoch),y=cyw(d.w);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();ctx.globalAlpha=1;}
+  if(showRW)drawLine(data.map(d=>({epoch:d.epoch,w:d.rW})),'#ff8c30',0.6,1.2);
+  if(showSW)drawLine(data.map(d=>({epoch:d.epoch,w:d.sW})),'#30e8d8',0.75,1.5);
+  if(showAW)drawLine(data.map(d=>({epoch:d.epoch,w:d.aW})),'#5aabff',1,2);
+
+  // Y axis label
+  ctx.fillStyle='#405040';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
+  ctx.save();ctx.translate(12,Mtop+ch/2);ctx.rotate(-Math.PI/2);ctx.fillText('W (g/kg)',0,0);ctx.restore();
+
+  // ── CONTROL PANEL ──
+  if(hasCtrlData){
+    const cy0=Mtop+ch+dividerH;
+    const cyh=ctrlPanelH;
+    // Panel bg + border
+    ctx.fillStyle='#090b09';ctx.fillRect(Mleft,cy0,cw,cyh);
+    ctx.strokeStyle='#222e22';ctx.lineWidth=1;ctx.strokeRect(Mleft,cy0,cw,cyh);
+    // Divider label
+    ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
+    ctx.fillText('CONTROL VARIABLES (%)',Mleft+4,cy0-2);
+    // Scale: 0-100%
+    const cyc=pct=>cy0+cyh-(pct/100)*cyh;
+    // Grid lines at 0, 25, 50, 75, 100
+    [0,25,50,75,100].forEach(p=>{
+      const y=cyc(p);
+      ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+      ctx.beginPath();ctx.moveTo(Mleft,y);ctx.lineTo(Mleft+cw,y);ctx.stroke();
+      ctx.fillStyle='#2e3e2e';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='right';
+      ctx.fillText(p+'%',Mleft-3,y+3);
+    });
+    // Draw control series
+    function drawCtrl(key,color,alpha,lw){
+      const hasData=data.some(d=>d[key]!=null);
+      if(!hasData)return;
+      ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.globalAlpha=alpha;
+      ctx.beginPath();let first=true;
+      data.forEach(d=>{if(d[key]==null)return;const x=cx(d.epoch),y=cyc(d[key]);first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);});
+      ctx.stroke();ctx.globalAlpha=1;
+    }
+    if(showValve)drawCtrl('valve','#5aabff',0.85,1.8);
+    if(showFan)drawCtrl('fanPct','#40d870',0.8,1.5);
+    if(showHeater){
+      // Heater as filled area
+      ctx.fillStyle='rgba(240,72,72,0.15)';
+      ctx.beginPath();let first=true;
+      data.forEach(d=>{if(d.heater==null)return;const x=cx(d.epoch),y=cyc(d.heater);first?(ctx.moveTo(x,cyc(0)),ctx.lineTo(x,y),first=false):ctx.lineTo(x,y);});
+      ctx.lineTo(cx(data[data.length-1].epoch),cyc(0));ctx.closePath();ctx.fill();
+      drawCtrl('heater','#f04848',0.8,1.5);
+    }
+    // Legend
+    const legY=cy0+10;let legX=Mleft+5;
+    if(showValve&&data.some(d=>d.valve!=null)){ctx.fillStyle='#5aabff';ctx.font='8.5px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('● Valve%',legX,legY);legX+=60;}
+    if(showFan&&data.some(d=>d.fanPct!=null)){ctx.fillStyle='#40d870';ctx.fillText('● Fan%',legX,legY);legX+=50;}
+    if(showHeater&&data.some(d=>d.heater!=null)){ctx.fillStyle='#f04848';ctx.fillText('● Heater%',legX,legY);}
+    ctx.fillStyle='#405040';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
+    ctx.save();ctx.translate(12,cy0+cyh/2);ctx.rotate(-Math.PI/2);ctx.fillText('CTRL %',0,0);ctx.restore();
+  }
+
+  // ── HOVER CROSSHAIR ──
+  if(tsHoverIdx!==null&&data[tsHoverIdx]){
+    const d=data[tsHoverIdx];const x=cx(d.epoch);
+    const panelBottom=Mtop+ch+(hasCtrlData?dividerH+ctrlPanelH:0);
+    ctx.strokeStyle='rgba(240,176,48,0.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(x,Mtop);ctx.lineTo(x,panelBottom);ctx.stroke();
+    ctx.setLineDash([]);
+    [[d.aW,'#5aabff'],[d.rW,'#ff8c30'],[d.sW,'#30e8d8']].forEach(([w,c])=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,cyw(w),4,0,Math.PI*2);ctx.fill();});
+    if(hasCtrlData){
+      const cy0=Mtop+ch+dividerH,cyh=ctrlPanelH;
+      const cyc=pct=>cy0+cyh-(pct/100)*cyh;
+      if(showValve&&d.valve!=null){ctx.fillStyle='#5aabff';ctx.beginPath();ctx.arc(x,cyc(d.valve),3,0,Math.PI*2);ctx.fill();}
+      if(showFan&&d.fanPct!=null){ctx.fillStyle='#40d870';ctx.beginPath();ctx.arc(x,cyc(d.fanPct),3,0,Math.PI*2);ctx.fill();}
+    }
+  }
+}
+
+// Hover on canvas
+document.getElementById('ts-canvas').addEventListener('mousemove',function(e){
+  if(!tsData)return;
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left;
+  const Mleft=52,cw=this.width-Mleft-70;
+  const frac=Math.max(0,Math.min(1,(mx-Mleft)/cw));
+  const idx=Math.round(frac*(tsData.data.length-1));
+  if(idx!==tsHoverIdx){tsHoverIdx=idx;drawTs();}
+  const d=tsData.data[idx];
+  const spT=parseFloat(document.getElementById('ts-sp-t').value)||20;
+  const spRH=parseFloat(document.getElementById('ts-sp-rh').value)||55;
+  const tw=document.getElementById('ts-tooltip');
+  const prh=pRHfn(spT,d.aW);
+  const targetW=Wfn(spT,spRH);
+  tw.style.display='block';
+  tw.style.left=(e.clientX+12-rect.left)+'px';
+  tw.style.top=(e.clientY-10-rect.top)+'px';
+  tw.innerHTML=`<span style="color:var(--amber)">`+
+    (d.ts.toTimeString?d.ts.toTimeString().slice(0,5):'')+`</span>  `+
+    `<br><span style="color:var(--blue)">Room W: ${d.aW.toFixed(2)} g/kg  T: ${d.aT.toFixed(1)}°C  RH: ${d.aRH.toFixed(0)}%</span>`+
+    `<br><span style="color:var(--orange)">Return W: ${d.rW.toFixed(2)} g/kg  T: ${d.rT.toFixed(1)}°C</span>`+
+    `<br><span style="color:var(--cyan)">Supply W: ${d.sW.toFixed(2)} g/kg  T: ${d.sT.toFixed(1)}°C</span>`+
+    `<br>Coil ΔW: <span style="color:${d.coilDW>0?'var(--cyan)':'var(--red)'}">${d.coilDW>0?'+':''}${d.coilDW.toFixed(2)} g/kg</span>`+
+    `  Proj RH@${spT}°C: <span style="color:${prh<=spRH?'var(--green)':'var(--red)'}">${prh.toFixed(1)}%</span>`+
+    (d.valve!=null?`<br><span style="color:var(--blue)">Valve: ${d.valve.toFixed(0)}%</span>`:'')+
+    (d.fanPct!=null?`  <span style="color:var(--green)">Fan: ${d.fanPct.toFixed(0)}%</span>`:'')+
+    (d.heater!=null?`  <span style="color:var(--red)">Heater: ${d.heater.toFixed(0)}%</span>`:'')+
+    (d.oaT!=null?`<br><span style="color:#90b030">OA: ${d.oaT.toFixed(1)}°C / ${d.oaRH?d.oaRH.toFixed(0):'?'}% RH  W=${d.oaW?d.oaW.toFixed(2):'?'} g/kg</span>`:'')+'';
+});
+document.getElementById('ts-canvas').addEventListener('mouseleave',function(){tsHoverIdx=null;drawTs();document.getElementById('ts-tooltip').style.display='none';});
+
+// File input
+document.getElementById('csv-input').addEventListener('change',function(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>loadCSV(ev.target.result);
+  reader.readAsText(file);
+});
+document.getElementById('upload-zone').addEventListener('dragover',e=>{e.preventDefault();e.currentTarget.classList.add('drag');});
+document.getElementById('upload-zone').addEventListener('dragleave',e=>e.currentTarget.classList.remove('drag'));
+document.getElementById('upload-zone').addEventListener('drop',e=>{e.preventDefault();e.currentTarget.classList.remove('drag');const f=e.dataTransfer.files[0];if(f){const r=new FileReader();r.onload=ev=>loadCSV(ev.target.result);r.readAsText(f);}});
+
+// Re-run analysis when setpoint changes
+['ts-sp-t','ts-sp-rh'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(tsData){const t=parseFloat(document.getElementById('ts-sp-t').value)||20,r=parseFloat(document.getElementById('ts-sp-rh').value)||55;analyzeTs(t,r);drawTs();}}));
+
+// ════════════════════════════════════════════════
+// SNAPSHOT EVENTS
+// ════════════════════════════════════════════════
+document.getElementById('calc-btn').addEventListener('click',calc);
+document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'&&mode!=='ts')calc();}));
+[['valve','vv'],['fan','fv'],['heater','hv']].forEach(([id,dv])=>{document.getElementById(id).addEventListener('input',function(){document.getElementById(dv).textContent=this.value+'%';if(cs)updateDec();});});
+document.getElementById('log-btn').addEventListener('click',logState);
+document.getElementById('clr-btn').addEventListener('click',()=>{traj=[];sel=null;syncLog();updateSB();redraw();});
+window.addEventListener('resize',()=>{if(mode==='ts'){resizeTs();drawTs();}});
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+drawBase();syncLog();setMode(1);
+</script>
+</body>
+</html>
