@@ -33,6 +33,9 @@ header .sub{font-family:var(--mono);font-size:11px;color:var(--lo);}
 .mode-btn{padding:5px 13px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--lo);transition:all .15s;white-space:nowrap;border-right:1px solid var(--bdr-hi);}
 .mode-btn:last-child{border-right:none;}
 .mode-btn.active{background:var(--amber-bg);color:var(--amber);}
+.ver-badge{font-family:var(--mono);font-size:9.5px;color:var(--lo);border:1px solid var(--bdr-hi);padding:2px 7px;letter-spacing:1px;}
+.disclaimer-btn{margin-left:10px;background:transparent;border:1px solid #5c3a10;color:#a07010;font-family:var(--mono);font-size:9.5px;letter-spacing:1px;padding:4px 10px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.disclaimer-btn:hover{background:#5c3a10;color:var(--amber);}
 
 /* ── LAYOUT ── */
 .main{display:grid;grid-template-columns:310px 1fr 360px;flex:1;min-height:0;}
@@ -239,12 +242,32 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 <header>
   <h1>AHU Psychro Navigator</h1>
   <span class="sub">// Psychrometric Control Decision Tool</span>
+  <span class="ver-badge">v1.2.0</span>
   <div class="mode-toggle">
     <button class="mode-btn active" id="btn-m1" onclick="setMode(1)">Room Only</button>
     <button class="mode-btn" id="btn-m2" onclick="setMode(2)">Full System</button>
     <button class="mode-btn" id="btn-ts" onclick="setMode('ts')">Time Series ✦</button>
   </div>
+  <button class="disclaimer-btn" onclick="document.getElementById('disclaimer-modal').style.display='flex'" title="Disclaimer">⚠ Disclaimer</button>
 </header>
+
+<!-- DISCLAIMER MODAL -->
+<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#111412;border:1px solid #2c3a2e;max-width:520px;width:90%;padding:28px 30px;position:relative;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:#f0b030;text-transform:uppercase;margin-bottom:14px;">⚠ Important Disclaimer</div>
+    <div style="font-size:14px;color:#a0b09c;line-height:1.75;margin-bottom:18px;">
+      This tool provides <strong style="color:#dce8d8">diagnostic guidance and control recommendations</strong> based on psychrometric calculations. It is intended as a decision-support aid for trained HVAC/BMS engineers.
+      <br><br>
+      <strong style="color:#dce8d8">All control actions must be verified and approved</strong> by the site engineer or facility manager before implementation. Do not apply control changes to live systems — especially operating theatres or critical care areas — without authorised sign-off.
+      <br><br>
+      Calculations assume standard atmospheric pressure (101.325 kPa). Results may vary under different site conditions. Smart Joules and the tool authors accept no liability for decisions made solely on the basis of this tool's output.
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#566052;">Smart Joules Application Engineering · AHU Psychro Navigator v1.2.0</div>
+      <button onclick="document.getElementById('disclaimer-modal').style.display='none'" style="background:var(--amber,#f0b030);border:none;color:#0a0c0a;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;cursor:pointer;letter-spacing:1px;">I Understand</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════
      MODES 1 & 2 — THREE COLUMN LAYOUT
@@ -460,6 +483,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
   <div class="sbi">PROJ RH: <span class="sbv" id="sb-proj">—</span></div>
   <div class="sbi" id="sb-ts-wrap" style="display:none">DATASET: <span class="sbv" id="sb-ts-info">—</span></div>
   <div class="sbi">LOGGED: <span class="sbv" id="sb-n">0</span></div>
+  <div class="sbi" style="margin-left:auto;color:#384038;font-size:9px;">For diagnostic guidance only · Verify all actions with site engineer · v1.2.0</div>
 </div>
 
 <script>
