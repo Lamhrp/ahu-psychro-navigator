@@ -629,15 +629,15 @@ function calc(){
   // Projected RH card
   const pc=document.getElementById('proj-card'),pb=document.getElementById('proj-big'),pe=document.getElementById('proj-exp'),pv=document.getElementById('proj-verd');
   pb.textContent=prh.toFixed(1)+' %';
-  if(prh>sR+0.5){pc.className='mcard mr';pb.className='mc-big vr';pe.innerHTML=`If air at its <strong>current moisture level (W = ${cW.toFixed(2)} g/kg)</strong> is brought to ${sT}°C, RH would be <strong>${prh.toFixed(1)}%</strong> — ${(prh-sR).toFixed(1)}% above target. <strong>Dehumidify first.</strong>`;pv.textContent='✗ Too humid — dehumidify first';pv.className='verdict vbad';}
-  else if(prh<sR-0.5){pc.className='mcard mg';pb.className='mc-big vg';pe.innerHTML=`At ${sT}°C, current moisture gives <strong>${prh.toFixed(1)}% RH</strong> — ${(sR-prh).toFixed(1)}% below target. Moisture is OK. Focus on temperature.`;pv.textContent='✓ Moisture OK — adjust temperature';pv.className='verdict vok';}
-  else{pc.className='mcard ma';pb.className='mc-big va';pe.innerHTML=`Projected RH ${prh.toFixed(1)}% ≈ target ${sR}%. Fine-tune temperature.`;pv.textContent='~ Near target';pv.className='verdict vwrn';}
+  if(prh>sR+tolRH){pc.className='mcard mr';pb.className='mc-big vr';pe.innerHTML=`If air at its <strong>current moisture level (W = ${cW.toFixed(2)} g/kg)</strong> is brought to ${sT}°C, RH would be <strong>${prh.toFixed(1)}%</strong> — ${(prh-sR).toFixed(1)}% above target. Outside the ±${tolRH}% tolerance band. <strong>Dehumidify first.</strong>`;pv.textContent='✗ Too humid — dehumidify first';pv.className='verdict vbad';}
+  else if(prh<sR-tolRH){pc.className='mcard mg';pb.className='mc-big vg';pe.innerHTML=`At ${sT}°C, current moisture gives <strong>${prh.toFixed(1)}% RH</strong> — ${(sR-prh).toFixed(1)}% below target, within the ±${tolRH}% tolerance band. Moisture is acceptable. Focus on temperature.`;pv.textContent='✓ Moisture within tolerance — adjust temperature';pv.className='verdict vok';}
+  else{pc.className='mcard mg';pb.className='mc-big vg';pe.innerHTML=`Projected RH at ${sT}°C = <strong>${prh.toFixed(1)}%</strong>. Target is ${sR}% ±${tolRH}% (acceptable range: ${(sR-tolRH).toFixed(0)}–${(sR+tolRH).toFixed(0)}%). <strong>Moisture is within the acceptable band.</strong>`;pv.textContent='✓ Within tolerance band';pv.className='verdict vok';}
   // W comparison card
   const wc=document.getElementById('w-card'),we=document.getElementById('w-exp'),cc=document.getElementById('cmp-cw');
   cc.textContent=cW.toFixed(2);
-  if(dW>0.15){wc.className='mcard mr';cc.className='cmp-num vr';we.innerHTML=`Room holds <strong>${cW.toFixed(2)} g/kg</strong> — target is <strong>${sW.toFixed(2)} g/kg</strong>. Must remove <strong>${dW.toFixed(2)} g/kg</strong> per kg of dry air.`;}
-  else if(dW<-0.15){wc.className='mcard mb';cc.className='cmp-num vb';we.innerHTML=`Room W (${cW.toFixed(2)}) already below target (${sW.toFixed(2)}). Air is dry enough — focus on temperature.`;}
-  else{wc.className='mcard mg';cc.className='cmp-num vb';we.innerHTML=`Humidity ratio on target. ${cW.toFixed(2)} ≈ ${sW.toFixed(2)} g/kg. Focus on temperature.`;}
+  if(dW>tolW/2){wc.className='mcard mr';cc.className='cmp-num vr';we.innerHTML=`Room holds <strong>${cW.toFixed(2)} g/kg</strong> — target is <strong>${sW.toFixed(2)} g/kg</strong> (acceptable up to ${spWhi.toFixed(2)} g/kg with ±${tolRH}% tolerance). Must remove <strong>${dW.toFixed(2)} g/kg</strong> per kg of dry air.`;}
+  else if(dW<-tolW/2){wc.className='mcard mb';cc.className='cmp-num vb';we.innerHTML=`Room W (${cW.toFixed(2)}) is below target (${sW.toFixed(2)}), within the ±${tolRH}% tolerance band. Air is dry enough — focus on temperature.`;}
+  else{wc.className='mcard mg';cc.className='cmp-num vb';we.innerHTML=`Humidity ratio is within the tolerance band. Room W (${cW.toFixed(2)} g/kg) is within ±${tolRH}% of target (acceptable: ${spWlo.toFixed(2)}–${spWhi.toFixed(2)} g/kg). Focus on temperature.`;}
   updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); redraw();
 }
 
@@ -932,7 +932,8 @@ function logState(){
 function syncLog(){
   const spRH=cs?cs.spRH:55;
   const rows=traj.map((s,i)=>{
-    const wc=s.dW>0.15?'vr':s.dW<-0.15?'vb':'vg',pc=s.projRH>spRH+0.5?'vr':'vg';
+    const tolW=cs?cs.tolW:0.3,tolRHlog=cs?cs.tolRH:2,spRH=cs?cs.spRH:55;
+    const wc=s.dW>tolW/2?'vr':s.dW<-tolW/2?'vb':'vg',pc=s.projRH>spRH+tolRHlog?'vr':'vg';
     return `<div class="te ${i===sel?'sel':''}" data-i="${i}"><div class="te-hd"><span class="te-num">#${i+1}</span><span class="te-main">${s.t}°C / ${s.rh}% RH</span></div><div class="te-grid"><div><span class="te-k">Room W</span><span class="te-v vb">${s.w.toFixed(2)} g/kg</span></div><div><span class="te-k">Target W</span><span class="te-v vg">${s.spW.toFixed(2)} g/kg</span></div><div><span class="te-k">ΔW</span><span class="te-v ${wc}">${(s.dW>=0?'+':'')+s.dW.toFixed(2)}</span></div><div><span class="te-k">Proj RH @ SP</span><span class="te-v ${pc}">${s.projRH.toFixed(1)}%</span></div></div><div class="te-ctrl">V:${s.valve}% · Fan:${s.fan}% · Heat:${s.heater}%</div></div>`;
   }).join('') || '<div class="traj-empty">No states logged yet.</div>';
   [document.getElementById('log-m1'),document.getElementById('log-m2')].forEach(el=>{if(el)el.innerHTML=rows;});
@@ -944,13 +945,14 @@ function syncLog(){
 // ════════════════════════════════════════════════
 function updateSB(){
   if(!cs)return;
-  const{currW,spW,pRH:prh,spRH,dW,dT}=cs;
-  const atSP=Math.abs(dW)<0.15&&Math.abs(dT)<0.5,dehumid=dW>0.15;
+  const{currW,spW,pRH:prh,spRH,dW,dT,tolT,tolRH,atSP}=cs;
+  const dehumid=dW>cs.tolW/2+0.05;
   document.getElementById('sdot').className='sdot '+(atSP?'ok':dehumid?'bad':'warn');
-  document.getElementById('sb-status').textContent=atSP?'AT SETPOINT':dehumid?'DEHUMIDIFY':'HEAT / STABILISE';
+  document.getElementById('sb-status').textContent=atSP?'WITHIN TOLERANCE':dehumid?'DEHUMIDIFY':'HEAT / STABILISE';
   document.getElementById('sb-cw').textContent=currW.toFixed(2)+' g/kg';
   document.getElementById('sb-tw').textContent=spW.toFixed(2)+' g/kg';
-  document.getElementById('sb-proj').textContent=prh.toFixed(1)+'%'+(prh>spRH+0.5?' ▲':' ✓');
+  const projOk=Math.abs(prh-spRH)<=tolRH;
+  document.getElementById('sb-proj').textContent=prh.toFixed(1)+'%'+(projOk?' ✓':prh>spRH+tolRH?' ▲':' ▼');
   document.getElementById('sb-n').textContent=traj.length;
 }
 function blk(type,tClass,title,body,acts){
