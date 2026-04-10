@@ -8,15 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0c0e0d; --surf:#111412; --bdr:#1e2620; --bdr-hi:#2c3a2e;
-  --amber:#f0b030; --amber-m:#7a5a10; --amber-bg:rgba(240,176,48,0.09);
-  --green:#40d870; --green-m:#1c5c34; --green-bg:rgba(64,216,112,0.09);
-  --red:#f04848; --red-m:#5c1c1c; --red-bg:rgba(240,72,72,0.09);
-  --blue:#5aabff; --blue-m:#1a4070; --blue-bg:rgba(90,171,255,0.09);
-  --cyan:#30e8d8; --cyan-m:#0a4440; --cyan-bg:rgba(48,232,216,0.09);
-  --orange:#ff8c30; --orange-m:#5a3010; --orange-bg:rgba(255,140,48,0.09);
-  --purple:#b088ff;
-  --hi:#dce8d8; --txt:#a0b09c; --lo:#566052; --xlo:#384038;
+  --bg:#f4f6f4; --surf:#ffffff; --bdr:#d4dcd4; --bdr-hi:#b8c8b8;
+  --amber:#b86800; --amber-m:#7a4400; --amber-bg:rgba(184,104,0,0.09);
+  --green:#1a7a40; --green-m:#0e4e28; --green-bg:rgba(26,122,64,0.09);
+  --red:#c02020; --red-m:#7a1010; --red-bg:rgba(192,32,32,0.09);
+  --blue:#1a6abf; --blue-m:#0a3a78; --blue-bg:rgba(26,106,191,0.09);
+  --cyan:#0a7870; --cyan-m:#064844; --cyan-bg:rgba(10,120,112,0.09);
+  --orange:#b85810; --orange-m:#783808; --orange-bg:rgba(184,88,16,0.09);
+  --purple:#5830a8;
+  --hi:#1a2018; --txt:#3a4838; --lo:#7a887a; --xlo:#b0bcb0;
   --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -26,48 +26,48 @@ body{background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15p
 ::-webkit-scrollbar-thumb{background:var(--bdr-hi);border-radius:3px;}
 
 /* ── HEADER ── */
-header{background:#090b0a;border-bottom:1px solid var(--bdr);padding:9px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-header h1{font-weight:700;font-size:16px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);white-space:nowrap;}
+header{background:#f0f2f0;border-bottom:1px solid var(--bdr);padding:9px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+header h1{font-weight:700;font-size:18px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);white-space:nowrap;}
 header .sub{font-family:var(--mono);font-size:11px;color:var(--lo);}
 .mode-toggle{display:flex;margin-left:auto;border:1px solid var(--bdr-hi);overflow:hidden;}
 .mode-btn{padding:5px 13px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--lo);transition:all .15s;white-space:nowrap;border-right:1px solid var(--bdr-hi);}
 .mode-btn:last-child{border-right:none;}
 .mode-btn.active{background:var(--amber-bg);color:var(--amber);}
 .ver-badge{font-family:var(--mono);font-size:9.5px;color:var(--lo);border:1px solid var(--bdr-hi);padding:2px 7px;letter-spacing:1px;}
-.disclaimer-btn{margin-left:10px;background:transparent;border:1px solid #5c3a10;color:#a07010;font-family:var(--mono);font-size:9.5px;letter-spacing:1px;padding:4px 10px;cursor:pointer;white-space:nowrap;transition:all .15s;}
-.disclaimer-btn:hover{background:#5c3a10;color:var(--amber);}
+.disclaimer-btn{margin-left:10px;background:transparent;border:1px solid #c87820;color:#8a5200;font-family:var(--mono);font-size:9.5px;letter-spacing:1px;padding:4px 10px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.disclaimer-btn:hover{background:#c87820;color:var(--amber);}
 
 /* ── LAYOUT ── */
 .main{display:grid;grid-template-columns:310px 1fr 360px;flex:1;min-height:0;}
 .col{display:flex;flex-direction:column;border-right:1px solid var(--bdr);min-height:0;}
 .col:last-child{border-right:none;}
-.col-head{background:#090b0a;border-bottom:1px solid var(--bdr);padding:8px 16px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;flex-shrink:0;display:flex;align-items:center;gap:8px;}
+.col-head{background:#f0f2f0;border-bottom:1px solid var(--bdr);padding:8px 16px;font-family:var(--mono);font-size:10px;letter-spacing:2.5px;color:var(--amber);text-transform:uppercase;flex-shrink:0;display:flex;align-items:center;gap:8px;}
 .dot-ind{width:7px;height:7px;border-radius:50%;background:var(--bdr-hi);transition:all .3s;flex-shrink:0;}
 .dot-ind.on{background:var(--green);box-shadow:0 0 5px var(--green);}
 .col-body{flex:1;overflow-y:auto;padding:14px 16px;scrollbar-width:thin;}
 
 /* ── SHARED COMPONENTS ── */
-.sec{font-family:var(--mono);font-size:9px;letter-spacing:3px;color:var(--lo);text-transform:uppercase;margin:16px 0 9px;display:flex;align-items:center;gap:8px;}
+.sec{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--lo);text-transform:uppercase;margin:16px 0 9px;display:flex;align-items:center;gap:8px;}
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
 .sec:first-child{margin-top:2px;}
-.sec-chip{font-family:var(--mono);font-size:9px;letter-spacing:0;text-transform:none;padding:1px 6px;border-radius:2px;}
+.sec-chip{font-family:var(--mono);font-size:10px;letter-spacing:0;text-transform:none;padding:1px 6px;border-radius:2px;}
 .sc-m2{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-m);}
 .sc-opt{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-m);font-size:8px;}
 .ir{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.ir label{flex:1;font-size:13px;font-weight:500;color:var(--txt);}
-.ir input[type=number]{width:78px;background:#080a08;border:1px solid var(--bdr-hi);color:var(--hi);font-family:var(--mono);font-size:14px;font-weight:500;padding:6px 10px;text-align:right;outline:none;-moz-appearance:textfield;transition:border-color .15s;}
+.ir label{flex:1;font-size:14px;font-weight:500;color:var(--txt);}
+.ir input[type=number]{width:78px;background:#f8faf8;border:1px solid var(--bdr-hi);color:var(--hi);font-family:var(--mono);font-size:15px;font-weight:500;padding:6px 10px;text-align:right;outline:none;-moz-appearance:textfield;transition:border-color .15s;}
 .ir input[type=number]::-webkit-inner-spin-button,.ir input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
 .ir input:focus{border-color:var(--amber);}
 .ir input.inp-m2:focus{border-color:var(--cyan);}
 .ir input.inp-ret:focus{border-color:var(--orange);}
 .unit{font-family:var(--mono);font-size:11px;color:var(--lo);width:24px;}
-.calc-btn{width:100%;padding:11px 16px;background:var(--amber);border:none;color:#0a0c0a;font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:background .15s;}
+.calc-btn{width:100%;padding:11px 16px;background:var(--amber);border:none;color:#ffffff;font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:12px;transition:background .15s;}
 .calc-btn:hover{background:#f8c840;}
 .results{display:none;} .results.on{display:block;}
-.ctable{background:#080a08;border:1px solid var(--bdr);padding:10px 12px;margin:9px 0;font-family:var(--mono);}
-.ct-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid var(--bdr);font-size:12px;}
+.ctable{background:#f8faf8;border:1px solid var(--bdr);padding:10px 12px;margin:9px 0;font-family:var(--mono);}
+.ct-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--bdr);font-size:13px;}
 .ct-row:last-child{border-bottom:none;}
-.ct-k{color:var(--lo);} .ct-v{font-weight:500;font-size:13px;color:var(--hi);}
+.ct-k{color:var(--lo);} .ct-v{font-weight:500;font-size:14px;color:var(--hi);}
 .ct-v.va{color:var(--amber);} .ct-v.vg{color:var(--green);} .ct-v.vr{color:var(--red);} .ct-v.vb{color:var(--blue);} .ct-v.vc{color:var(--cyan);} .ct-v.vo{color:var(--orange);}
 .mcard{border:1px solid var(--bdr-hi);padding:14px 15px;margin:9px 0;position:relative;overflow:hidden;}
 .mcard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;}
@@ -77,26 +77,27 @@ header .sub{font-family:var(--mono);font-size:11px;color:var(--lo);}
 .mcard.mb::before{background:var(--blue);}   .mcard.mb{background:var(--blue-bg);}
 .mcard.mc::before{background:var(--cyan);}   .mcard.mc{background:var(--cyan-bg);}
 .mcard.mo::before{background:var(--orange);} .mcard.mo{background:var(--orange-bg);}
-.mc-lbl{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--lo);margin-bottom:4px;}
-.mc-big{font-family:var(--mono);font-size:28px;font-weight:500;line-height:1.1;margin-bottom:5px;}
+.mc-lbl{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lo);margin-bottom:4px;}
+.mc-big{font-family:var(--mono);font-size:30px;font-weight:500;line-height:1.1;margin-bottom:5px;}
 .mc-big.va{color:var(--amber);} .mc-big.vg{color:var(--green);} .mc-big.vr{color:var(--red);}
 .mc-big.vb{color:var(--blue);} .mc-big.vc{color:var(--cyan);}  .mc-big.vo{color:var(--orange);}
-.mc-exp{font-size:12.5px;line-height:1.6;color:var(--txt);}
+.mc-exp{font-size:13.5px;line-height:1.6;color:var(--txt);}
 .mc-exp strong{color:var(--hi);font-weight:600;}
-.verdict{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;margin-top:7px;font-weight:500;}
+.verdict{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;margin-top:7px;font-weight:500;}
 .verdict.vbad{background:var(--red-bg);color:var(--red);border:1px solid var(--red-m);}
 .verdict.vok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-m);}
 .verdict.vwrn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-m);}
+.verdict.vinfo{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-m);}
 .cmp{display:flex;align-items:center;gap:8px;margin-top:9px;font-family:var(--mono);}
-.cmp-item{flex:1;background:#080a08;border:1px solid var(--bdr);padding:6px 8px;text-align:center;}
+.cmp-item{flex:1;background:#f8faf8;border:1px solid var(--bdr);padding:6px 8px;text-align:center;}
 .cmp-lbl{font-size:9px;color:var(--lo);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;}
-.cmp-num{font-size:18px;font-weight:500;}
+.cmp-num{font-size:20px;font-weight:500;}
 .cmp-num.vb{color:var(--blue);} .cmp-num.vg{color:var(--green);} .cmp-num.vr{color:var(--red);} .cmp-num.vc{color:var(--cyan);}
 .cmp-arr{color:var(--lo);font-size:16px;flex-shrink:0;}
 .sld-wrap{margin-bottom:12px;}
 .sld-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.sld-name{font-size:13px;font-weight:500;color:var(--txt);}
-.sld-val{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--hi);min-width:42px;text-align:right;}
+.sld-name{font-size:14px;font-weight:500;color:var(--txt);}
+.sld-val{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--hi);min-width:42px;text-align:right;}
 input[type=range]{width:100%;-webkit-appearance:none;height:3px;background:var(--bdr-hi);outline:none;cursor:pointer;border-radius:2px;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;cursor:pointer;transition:transform .1s;}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
@@ -113,13 +114,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
 .li{display:flex;align-items:center;gap:4px;}
 .li-line{width:16px;height:2px;} .li-dot{width:8px;height:8px;border-radius:50%;}
 .tab-bar{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
-.tab-btn{flex:1;padding:8px 6px;text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--lo);background:#090b0a;border:none;border-right:1px solid var(--bdr);transition:all .15s;}
+.tab-btn{flex:1;padding:8px 6px;text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--lo);background:#f0f2f0;border:none;border-right:1px solid var(--bdr);transition:all .15s;}
 .tab-btn:last-child{border-right:none;}
 .tab-btn.active{color:var(--amber);background:var(--amber-bg);}
 .tab-pane{display:none;flex:1;overflow-y:auto;padding:14px 16px;scrollbar-width:thin;}
 .tab-pane.active{display:block;}
 .phase-bar{display:flex;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px;}
-.ph{flex:1;padding:8px 4px;text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--xlo);background:#090b09;border-right:1px solid var(--bdr);transition:all .3s;}
+.ph{flex:1;padding:8px 4px;text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--xlo);background:#f0f2f0;border-right:1px solid var(--bdr);transition:all .3s;}
 .ph:last-child{border-right:none;}
 .ph.active{background:var(--amber-bg);color:var(--amber);}
 .ph.done{background:var(--green-bg);color:var(--green);}
@@ -131,20 +132,20 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
 .dblk.dc{border-color:var(--cyan);background:var(--cyan-bg);}
 .dtag{font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:7px;font-weight:500;}
 .dtag.ta{color:var(--red);} .dtag.tw{color:var(--amber);} .dtag.tg{color:var(--green);} .dtag.ti{color:var(--blue);} .dtag.tc{color:var(--cyan);}
-.dtitle{font-size:14px;font-weight:700;color:var(--hi);margin-bottom:6px;line-height:1.3;}
-.dtext{font-size:12.5px;line-height:1.65;color:var(--txt);margin-bottom:5px;}
+.dtitle{font-size:15px;font-weight:700;color:var(--hi);margin-bottom:6px;line-height:1.3;}
+.dtext{font-size:13.5px;line-height:1.65;color:var(--txt);margin-bottom:5px;}
 .dacts{margin-top:7px;}
-.dact{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:12.5px;color:var(--hi);line-height:1.5;}
+.dact{display:flex;gap:8px;align-items:flex-start;margin:6px 0;font-size:13.5px;color:var(--hi);line-height:1.5;}
 .darr{color:var(--amber);font-family:var(--mono);font-size:11px;flex-shrink:0;margin-top:2px;}
-.traj-empty{font-size:12.5px;color:var(--lo);padding:4px 0;line-height:1.6;}
+.traj-empty{font-size:13px;color:var(--lo);padding:4px 0;line-height:1.6;}
 .te{border:1px solid var(--bdr);padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:all .15s;background:var(--surf);}
 .te:hover{border-color:var(--blue);background:var(--blue-bg);}
 .te.sel{border-color:var(--amber);background:var(--amber-bg);}
 .te-hd{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .te-num{font-family:var(--mono);font-size:10px;color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-m);padding:1px 7px;font-weight:500;}
-.te-main{font-family:var(--mono);font-size:13px;color:var(--hi);font-weight:500;}
-.te-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin:6px 0;font-family:var(--mono);font-size:11px;}
-.te-k{color:var(--lo);display:block;} .te-v{color:var(--txt);font-weight:500;font-size:12.5px;}
+.te-main{font-family:var(--mono);font-size:14px;color:var(--hi);font-weight:500;}
+.te-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 10px;margin:6px 0;font-family:var(--mono);font-size:12px;}
+.te-k{color:var(--lo);display:block;} .te-v{color:var(--txt);font-weight:500;font-size:13.5px;}
 .te-v.vr{color:var(--red);} .te-v.vg{color:var(--green);} .te-v.vb{color:var(--blue);} .te-v.vc{color:var(--cyan);}
 .te-ctrl{font-family:var(--mono);font-size:11px;color:var(--lo);margin-top:5px;padding-top:5px;border-top:1px solid var(--bdr);}
 .sensor-block{border:1px solid var(--bdr);padding:10px 12px;margin:8px 0;}
@@ -154,7 +155,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
 .sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .sb-title.t-supply .sb-dot{background:var(--cyan);} .sb-title.t-supply{color:var(--cyan);}
 .sb-title.t-return .sb-dot{background:var(--orange);} .sb-title.t-return{color:var(--orange);}
-.statusbar{background:#080a08;border-top:1px solid var(--bdr);padding:5px 20px;display:flex;gap:22px;font-family:var(--mono);font-size:10px;color:var(--lo);flex-shrink:0;flex-wrap:wrap;}
+.statusbar{background:#f8faf8;border-top:1px solid var(--bdr);padding:5px 20px;display:flex;gap:22px;font-family:var(--mono);font-size:10px;color:var(--lo);flex-shrink:0;flex-wrap:wrap;}
 .sbi{display:flex;align-items:center;gap:5px;} .sbv{color:var(--amber);}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--bdr-hi);transition:all .3s;}
 .sdot.ok{background:var(--green);box-shadow:0 0 5px var(--green);} .sdot.warn{background:var(--amber);} .sdot.bad{background:var(--red);}
@@ -162,14 +163,14 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 @keyframes pulse{0%{r:9;opacity:.9}100%{r:22;opacity:0}}
 .pr{animation:pulse 1.2s ease-out infinite;}
 .m2-section{display:none;} .m2-section.on{display:block;}
-.info-note{font-size:12px;color:var(--lo);font-style:italic;line-height:1.5;margin:6px 0;padding:7px 10px;border-left:2px solid var(--bdr-hi);}
+.info-note{font-size:13px;color:var(--lo);font-style:italic;line-height:1.5;margin:6px 0;padding:7px 10px;border-left:2px solid var(--bdr-hi);}
 .process-flow{display:flex;align-items:center;gap:0;margin:10px 0;font-family:var(--mono);font-size:10px;}
-.pf-node{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--bdr);background:#080a08;}
+.pf-node{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--bdr);background:#f8faf8;}
 .pf-node .pf-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lo);margin-bottom:3px;}
 .pf-node .pf-val{font-size:12px;font-weight:500;}
 .pf-node.pf-ret{border-color:var(--orange-m);background:var(--orange-bg);} .pf-node.pf-ret .pf-val{color:var(--orange);}
 .pf-node.pf-sup{border-color:var(--cyan-m);background:var(--cyan-bg);}     .pf-node.pf-sup .pf-val{color:var(--cyan);}
-.pf-node.pf-room{border-color:var(--bdr-hi);background:#0e1010;}            .pf-node.pf-room .pf-val{color:var(--txt);}
+.pf-node.pf-room{border-color:var(--bdr-hi);background:#f0f4f4;}            .pf-node.pf-room .pf-val{color:var(--txt);}
 .pf-node.pf-sp{border-color:var(--green-m);background:var(--green-bg);}     .pf-node.pf-sp .pf-val{color:var(--green);}
 .pf-arrow{color:var(--lo);padding:0 2px;font-size:14px;flex-shrink:0;}
 .pf-arrow.cool{color:var(--blue);} .pf-arrow.heat{color:var(--red);}
@@ -187,16 +188,16 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 .upload-zone input[type=file]{display:none;}
 .upload-icon{font-size:24px;margin-bottom:8px;color:var(--lo);}
 .upload-text{font-size:13px;color:var(--lo);line-height:1.5;}
-.upload-text strong{color:var(--txt);}
+.upload-text strong{color:var(--hi);}
 .file-loaded{border-color:var(--green);background:var(--green-bg);}
 .file-loaded .upload-icon{color:var(--green);}
 .file-loaded .upload-text{color:var(--green);}
 
 /* Metric pill row */
 .pill-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;}
-.pill{background:#080a08;border:1px solid var(--bdr);padding:9px 11px;}
+.pill{background:#f8faf8;border:1px solid var(--bdr);padding:9px 11px;}
 .pill-lbl{font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--lo);margin-bottom:3px;}
-.pill-val{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--hi);}
+.pill-val{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--hi);}
 .pill-val.vr{color:var(--red);} .pill-val.vg{color:var(--green);}
 .pill-val.va{color:var(--amber);} .pill-val.vc{color:var(--cyan);}
 .pill-sub{font-size:10px;color:var(--lo);margin-top:2px;}
@@ -204,14 +205,14 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 /* Series toggles */
 .toggle-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;cursor:pointer;}
 .toggle-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.toggle-lbl{font-size:13px;color:var(--txt);flex:1;}
+.toggle-lbl{font-size:14px;color:var(--txt);flex:1;}
 .toggle-chk{width:16px;height:16px;cursor:pointer;accent-color:var(--amber);}
 
 /* Chart canvas area */
 .ts-chart-area{display:flex;flex-direction:column;padding:10px 12px 6px;background:var(--bg);min-height:0;}
 .ts-chart-area .col-head{margin:0 -12px;padding:8px 12px;}
 #ts-canvas{flex:1;width:100%;display:block;cursor:crosshair;}
-.ts-tooltip{position:absolute;background:#0c0e0d;border:1px solid var(--amber);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--hi);pointer-events:none;display:none;z-index:10;line-height:1.6;}
+.ts-tooltip{position:absolute;background:#f4f6f4;border:1px solid var(--amber);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--hi);pointer-events:none;display:none;z-index:10;line-height:1.6;}
 
 /* Finding cards */
 .finding{border-left:3px solid var(--bdr);padding:10px 13px;margin-bottom:9px;background:var(--surf);}
@@ -221,8 +222,8 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 .finding.fi{border-color:var(--blue);background:var(--blue-bg);}
 .f-tag{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;font-weight:500;}
 .f-tag.ta{color:var(--red);} .f-tag.tw{color:var(--amber);} .f-tag.tg{color:var(--green);} .f-tag.ti{color:var(--blue);}
-.f-title{font-size:13px;font-weight:700;color:var(--hi);margin-bottom:4px;line-height:1.3;}
-.f-text{font-size:12px;line-height:1.6;color:var(--txt);}
+.f-title{font-size:14px;font-weight:700;color:var(--hi);margin-bottom:4px;line-height:1.3;}
+.f-text{font-size:13px;line-height:1.65;color:var(--txt);}
 .f-text strong{color:var(--hi);font-weight:600;}
 
 /* Hourly heatmap */
@@ -233,7 +234,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 .hm-hr{font-size:7px;color:var(--xlo);}
 .hm-legend{display:flex;gap:12px;margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--lo);}
 .hm-swatch{width:12px;height:12px;border-radius:2px;display:inline-block;}
-.tol-block{border:1px solid var(--bdr-hi);padding:9px 12px;margin:6px 0;background:rgba(240,176,48,0.04);}
+.tol-block{border:1px solid var(--bdr-hi);padding:9px 12px;margin:6px 0;background:rgba(184,104,0,0.05);}
 .tol-note{font-size:11.5px;color:var(--lo);line-height:1.5;margin-bottom:8px;font-style:italic;}
 </style>
 </head>
@@ -252,18 +253,18 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 </header>
 
 <!-- DISCLAIMER MODAL -->
-<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;">
-  <div style="background:#111412;border:1px solid #2c3a2e;max-width:520px;width:90%;padding:28px 30px;position:relative;">
-    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:#f0b030;text-transform:uppercase;margin-bottom:14px;">⚠ Important Disclaimer</div>
-    <div style="font-size:14px;color:#a0b09c;line-height:1.75;margin-bottom:18px;">
-      This tool provides <strong style="color:#dce8d8">diagnostic guidance and control recommendations</strong> based on psychrometric calculations. It is intended as a decision-support aid for trained HVAC/BMS engineers.
+<div id="disclaimer-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#ffffff;border:1px solid #2c3a2e;max-width:520px;width:90%;padding:28px 30px;position:relative;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#b86800;text-transform:uppercase;margin-bottom:14px;">⚠ Important Disclaimer</div>
+    <div style="font-size:14px;color:#3a4838;line-height:1.75;margin-bottom:18px;">
+      This tool provides <strong style="color:#1a2018">diagnostic guidance and control recommendations</strong> based on psychrometric calculations. It is intended as a decision-support aid for trained HVAC/BMS engineers.
       <br><br>
-      <strong style="color:#dce8d8">All control actions must be verified and approved</strong> by the site engineer or facility manager before implementation. Do not apply control changes to live systems — especially operating theatres or critical care areas — without authorised sign-off.
+      <strong style="color:#1a2018">All control actions must be verified and approved</strong> by the site engineer or facility manager before implementation. Do not apply control changes to live systems — especially operating theatres or critical care areas — without authorised sign-off.
       <br><br>
       Calculations assume standard atmospheric pressure (101.325 kPa). Results may vary under different site conditions. Smart Joules and the tool authors accept no liability for decisions made solely on the basis of this tool's output.
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#566052;">Smart Joules Application Engineering · AHU Psychro Navigator v1.2.0</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7a887a;">Smart Joules Application Engineering · AHU Psychro Navigator v1.2.0</div>
       <button onclick="document.getElementById('disclaimer-modal').style.display='none'" style="background:var(--amber,#f0b030);border:none;color:#0a0c0a;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;cursor:pointer;letter-spacing:1px;">I Understand</button>
     </div>
   </div>
@@ -279,6 +280,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
   <div class="col-head"><span class="dot-ind" id="dot-in"></span>Inputs &amp; Controls</div>
   <div class="col-body">
     <div class="sec">Current Room Conditions</div>
+    <div class="ir"><label>Site Altitude</label><input type="number" id="site-alt" value="0" step="10" min="0" max="4000" title="Affects atmospheric pressure and all W calculations"><span class="unit">m</span></div>
     <div class="ir"><label>Dry Bulb Temperature</label><input type="number" id="curr-t" value="18" step="0.1" min="5" max="45"><span class="unit">°C</span></div>
     <div class="ir"><label>Relative Humidity</label><input type="number" id="curr-rh" value="65" step="0.5" min="1" max="99"><span class="unit">%</span></div>
     <div class="sec">Target Setpoint</div>
@@ -304,17 +306,30 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
         <div class="ir"><label>Return RH</label><input type="number" id="ret-rh" placeholder="—" step="0.5" min="1" max="99" class="inp-ret"><span class="unit">%</span></div>
       </div>
       <div class="sec">Chiller Setpoint <span class="sec-chip sc-opt">optional</span></div>
-      <div class="sensor-block" style="border-color:#2a3060;background:rgba(90,100,255,0.04);">
-        <div class="sb-title" style="color:#8090ff;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#8090ff"></span>Chilled Water Supply Temp</div>
-        <div class="ir"><label>Current CHW SP</label><input type="number" id="chw-cur" placeholder="—" step="0.5" min="4" max="20" style="border-color:#2a3060;"><span class="unit">°C</span></div>
-        <div class="ir"><label>Min CHW SP (limit)</label><input type="number" id="chw-min" placeholder="—" step="0.5" min="4" max="16" style="border-color:#2a3060;"><span class="unit">°C</span></div>
-        <div class="ir"><label>Max CHW SP (limit)</label><input type="number" id="chw-max" placeholder="—" step="0.5" min="8" max="20" style="border-color:#2a3060;"><span class="unit">°C</span></div>
+      <div class="sensor-block" style="border-color:#8090d0;background:rgba(90,100,255,0.05);">
+        <div class="sb-title" style="color:#4050b0;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#4050b0"></span>Chilled Water Supply Temp</div>
+        <div class="ir"><label>Current CHW SP</label><input type="number" id="chw-cur" placeholder="—" step="0.5" min="4" max="20" style="border-color:#8090d0;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Min CHW SP (limit)</label><input type="number" id="chw-min" placeholder="—" step="0.5" min="4" max="16" style="border-color:#8090d0;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Max CHW SP (limit)</label><input type="number" id="chw-max" placeholder="—" step="0.5" min="8" max="20" style="border-color:#8090d0;"><span class="unit">°C</span></div>
       </div>
       <div class="sec">Outside Air Conditions <span class="sec-chip sc-opt">optional</span></div>
-      <div class="sensor-block" style="border-color:#304a30;background:rgba(64,160,64,0.04);">
-        <div class="sb-title" style="color:#70c070;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#70c070"></span>Outdoor Air — for mixing analysis</div>
-        <div class="ir"><label>OA Temperature</label><input type="number" id="oa-t" placeholder="—" step="0.1" min="-10" max="50" style="border-color:#304a30;"><span class="unit">°C</span></div>
-        <div class="ir"><label>OA Relative Humidity</label><input type="number" id="oa-rh" placeholder="—" step="0.5" min="1" max="99" style="border-color:#304a30;"><span class="unit">%</span></div>
+      <div class="sensor-block" style="border-color:#50a050;background:rgba(64,160,64,0.05);">
+        <div class="sb-title" style="color:#208a20;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#208a20"></span>Outdoor Air — for mixing analysis</div>
+        <div class="ir"><label>OA Temperature</label><input type="number" id="oa-t" placeholder="—" step="0.1" min="-10" max="50" style="border-color:#50a050;"><span class="unit">°C</span></div>
+        <div class="ir"><label>OA Relative Humidity</label><input type="number" id="oa-rh" placeholder="—" step="0.5" min="1" max="99" style="border-color:#50a050;"><span class="unit">%</span></div>
+      </div>
+      <div class="sec">Design Basis (HAP) <span class="sec-chip sc-opt">optional</span></div>
+      <div class="sensor-block" style="border-color:#9060c0;background:rgba(144,96,192,0.05);">
+        <div class="sb-title" style="color:#6a38a8;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;"><span class="sb-dot" style="background:#6a38a8"></span>AHU Design Parameters — from HAP/load calc report</div>
+        <div class="ir"><label>Site Altitude</label><input type="number" id="db-alt" placeholder="e.g. 920" step="10" min="0" max="4000" style="border-color:#9060c0;"><span class="unit">m</span></div>
+        <div class="ir"><label>Cooling Capacity</label><input type="number" id="db-cc-kw" placeholder="—" step="0.5" min="0" max="500" style="border-color:#9060c0;"><span class="unit">kW</span></div>
+        <div class="ir"><label>Heating Capacity</label><input type="number" id="db-hc-kw" placeholder="—" step="0.1" min="0" max="100" style="border-color:#9060c0;"><span class="unit">kW</span></div>
+        <div class="ir"><label>Coil ADP</label><input type="number" id="db-adp" placeholder="e.g. 9.8" step="0.1" min="2" max="20" style="border-color:#9060c0;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Bypass Factor</label><input type="number" id="db-bf" placeholder="e.g. 0.124" step="0.001" min="0" max="0.5" style="border-color:#9060c0;"><span class="unit"></span></div>
+        <div class="ir"><label>Design Supply T</label><input type="number" id="db-sup-t" placeholder="e.g. 12" step="0.1" min="5" max="25" style="border-color:#9060c0;"><span class="unit">°C</span></div>
+        <div class="ir"><label>Design Supply RH</label><input type="number" id="db-sup-rh" placeholder="e.g. 95" step="1" min="50" max="100" style="border-color:#9060c0;"><span class="unit">%</span></div>
+        <div class="ir"><label>Design OA Fraction</label><input type="number" id="db-oa-pct" placeholder="e.g. 8.4" step="0.1" min="0" max="100" style="border-color:#9060c0;"><span class="unit">%</span></div>
+        <div class="ir"><label>Design Airflow</label><input type="number" id="db-cfm" placeholder="e.g. 4728" step="10" min="0" max="50000" style="border-color:#9060c0;"><span class="unit">CFM</span></div>
       </div>
     </div>
     <button class="calc-btn" id="calc-btn">⟳ Calculate</button>
@@ -368,7 +383,10 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 
 <!-- CENTRE -->
 <div class="col chart-col">
-  <div class="col-head">Psychrometric Chart</div>
+  <div class="col-head">Psychrometric Chart
+  <span style="font-size:10px;letter-spacing:0;font-family:var(--sans);color:var(--lo);margin-left:8px;font-weight:400;text-transform:none;">Scroll to zoom · Drag to pan</span>
+  <button id="chart-reset-btn" onclick="resetZoom()" style="margin-left:auto;background:var(--blue-bg);border:1px solid var(--blue-m);color:var(--blue);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:2px 8px;cursor:pointer;display:none;">⊡ Reset</button>
+</div>
   <svg id="psychro-chart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 420"></svg>
   <div class="legend">
     <div class="li"><span class="li-line" style="background:var(--blue);opacity:.7"></span>Room W</div>
@@ -379,6 +397,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
     <div class="li"><span class="li-dot" style="background:var(--amber)"></span>Logged</div>
     <div class="li m2-section" id="leg-sup"><span class="li-dot" style="background:var(--cyan)"></span>Supply</div>
     <div class="li m2-section" id="leg-ret"><span class="li-dot" style="background:var(--orange)"></span>Return</div>
+    <div class="li m2-section" id="leg-adp"><span class="li-dot" style="background:#6a38a8;transform:rotate(45deg);border-radius:1px;"></span>ADP (design)</div>
   </div>
 </div>
 
@@ -388,6 +407,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
   <div class="tab-bar m2-section" id="tab-bar">
     <button class="tab-btn active" onclick="switchTab('guidance')">Guidance</button>
     <button class="tab-btn" id="tab-diag-btn" onclick="switchTab('diagnostics')">System Diag.</button>
+    <button class="tab-btn" id="tab-design-btn" onclick="switchTab('design')">Design vs Actual</button>
     <button class="tab-btn" onclick="switchTab('log')">State Log</button>
   </div>
   <div class="tab-pane active" id="pane-guidance">
@@ -397,6 +417,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
     <div id="log-inline-wrapper"><hr class="div"><div class="sec">State Log</div><div id="log-m1"><div class="traj-empty">No states logged yet.</div></div></div>
   </div>
   <div class="tab-pane" id="pane-diagnostics"><div id="diag-content"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter supply duct sensor values and click Calculate</div></div></div></div>
+  <div class="tab-pane" id="pane-design"><div id="design-content"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter Design Basis parameters in the inputs panel and click Calculate</div><div class="dtext">Design Basis data comes from your HAP or load calculation report. The tool will compare design intent vs actual measured performance and identify whether issues are control problems or capacity/design problems.</div></div></div></div>
   <div class="tab-pane" id="pane-log"><div class="sec" style="margin-top:2px">State Log</div><div id="log-m2"><div class="traj-empty">No states logged yet.</div></div></div>
 </div>
 
@@ -440,7 +461,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
       <label class="toggle-row"><span class="toggle-dot" style="background:var(--cyan)"></span><span class="toggle-lbl">Supply W</span><input type="checkbox" class="toggle-chk" id="tog-sW" checked onchange="drawTs()"></label>
       <label class="toggle-row"><span class="toggle-dot" style="background:var(--red);opacity:.7"></span><span class="toggle-lbl">Coil ΔW (bars)</span><input type="checkbox" class="toggle-chk" id="tog-coil" checked onchange="drawTs()"></label>
       <label class="toggle-row"><span class="toggle-dot" style="background:var(--txt);opacity:.5"></span><span class="toggle-lbl">Area Temperature</span><input type="checkbox" class="toggle-chk" id="tog-T" checked onchange="drawTs()"></label>
-      <label class="toggle-row"><span class="toggle-dot" style="background:#90b030;opacity:.8"></span><span class="toggle-lbl">OA Temperature <span style="font-size:10px;color:var(--lo)">(if available)</span></span><input type="checkbox" class="toggle-chk" id="tog-oaT" onchange="drawTs()"></label>
+      <label class="toggle-row"><span class="toggle-dot" style="background:#4a7010;opacity:.9"></span><span class="toggle-lbl">OA Temperature <span style="font-size:10px;color:var(--lo)">(if available)</span></span><input type="checkbox" class="toggle-chk" id="tog-oaT" onchange="drawTs()"></label>
       <div class="sec">Control Variables <span class="sec-chip sc-opt">if available</span></div>
       <label class="toggle-row"><span class="toggle-dot" style="background:var(--blue);opacity:.9"></span><span class="toggle-lbl">Valve Position %</span><input type="checkbox" class="toggle-chk" id="tog-valve" onchange="drawTs()"></label>
       <label class="toggle-row"><span class="toggle-dot" style="background:var(--green);opacity:.9"></span><span class="toggle-lbl">Fan Speed %</span><input type="checkbox" class="toggle-chk" id="tog-fan" onchange="drawTs()"></label>
@@ -490,10 +511,15 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
 // ════════════════════════════════════════════════
 // PSYCHROMETRICS
 // ════════════════════════════════════════════════
-const PATM=101.325;
+const PATM_SEA=101.325;
+function getPatm(){
+  const alt=parseFloat(document.getElementById('site-alt')?.value||0)||0;
+  // Standard atmosphere: P = 101.325 * (1 - 2.2557e-5 * alt)^5.2559
+  return PATM_SEA * Math.pow(1 - 2.2557e-5 * alt, 5.2559);
+}
 const psat=T=>0.6108*Math.exp(17.27*T/(T+237.3));
-const Wfn=(T,RH)=>{const Pw=(RH/100)*psat(T);return 1000*0.622*Pw/(PATM-Pw);};
-const pRHfn=(T,Wg)=>{if(Wg<=0)return 0;const w=Wg/1e3,Pw=w*PATM/(0.622+w);return Math.min(100,Pw/psat(T)*100);};
+const Wfn=(T,RH,patm)=>{const P=patm||getPatm();const Pw=(RH/100)*psat(T);return 1000*0.622*Pw/(P-Pw);};
+const pRHfn=(T,Wg,patm)=>{if(Wg<=0)return 0;const P=patm||getPatm();const w=Wg/1e3,Pw=w*P/(0.622+w);return Math.min(100,Pw/psat(T)*100);};
 const dpFn=(T,RH)=>{const a=17.27,b=237.3,g=Math.log(Math.max(RH,.01)/100)+a*T/(b+T);return b*g/(a-g);};
 const enthFn=(T,Wg)=>1.006*T+Wg/1e3*(2501+1.86*T);
 
@@ -513,22 +539,34 @@ function drawBase(){
   SVG.innerHTML='';
   const defs=mkEl('defs',{});
   const mkArr=(id,color)=>{const m=mkEl('marker',{id,markerWidth:'8',markerHeight:'6',refX:'8',refY:'3',orient:'auto'});m.appendChild(mkEl('polygon',{points:'0 0,8 3,0 6',fill:color}));defs.appendChild(m);};
-  mkArr('arr-cyan','#30e8d8');mkArr('arr-orange','#ff8c30');mkArr('arr-blue','#5aabff');mkArr('arr-red','#f04848');
+  mkArr('arr-cyan','#30e8d8');mkArr('arr-orange','#ff8c30');mkArr('arr-blue','#5aabff');mkArr('arr-red','#f04848');mkArr('arr-purple','#6a38a8');
   SVG.appendChild(defs);
-  SVG.appendChild(mkEl('rect',{x:0,y:0,width:VW,height:VH,fill:'#090b09'}));
-  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'#0a0c0a'}));
-  for(let w=0;w<=W1;w+=2){const y=wy(w);SVG.appendChild(mkEl('line',{x1:M.left,y1:y,x2:M.left+CW,y2:y,stroke:'#131913','stroke-width':.7}));SVG.appendChild(mkEl('text',{x:M.left-5,y:y+3.5,'text-anchor':'end',fill:'#2e3e2e','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(w)));}
-  for(let t=5;t<=T1;t+=5){const x=tx(t);SVG.appendChild(mkEl('line',{x1:x,y1:M.top,x2:x,y2:M.top+CH,stroke:'#131913','stroke-width':.7}));SVG.appendChild(mkEl('text',{x,y:M.top+CH+13,'text-anchor':'middle',fill:'#2e3e2e','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(t)));}
+  SVG.appendChild(mkEl('rect',{x:0,y:0,width:VW,height:VH,fill:'#f0f2f0'}));
+  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'#f8faf8'}));
+  for(let w=0;w<=W1;w+=2){const y=wy(w);SVG.appendChild(mkEl('line',{x1:M.left,y1:y,x2:M.left+CW,y2:y,stroke:'#d8e0d8','stroke-width':.7}));SVG.appendChild(mkEl('text',{x:M.left-5,y:y+3.5,'text-anchor':'end',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(w)));}
+  for(let t=5;t<=T1;t+=5){const x=tx(t);SVG.appendChild(mkEl('line',{x1:x,y1:M.top,x2:x,y2:M.top+CH,stroke:'#d8e0d8','stroke-width':.7}));SVG.appendChild(mkEl('text',{x,y:M.top+CH+13,'text-anchor':'middle',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(t)));}
   [10,20,30,40,50,60,70,80,90,100].forEach(rh=>{
     const pts=[];for(let t=T0;t<=T1;t+=.35){const w=Wfn(t,rh);if(w<0||w>W1+.5)continue;pts.push(`${tx(t).toFixed(1)},${wy(Math.min(w,W1)).toFixed(1)}`);}
     if(pts.length<2)return;
-    SVG.appendChild(mkEl('polyline',{points:pts.join(' '),fill:'none',stroke:rh===100?'#1e2e1e':'#141e14','stroke-width':rh%20===0||rh===100?1:.55}));
-    const lW=Wfn(34,rh);if(lW>.2&&lW<W1-.5)SVG.appendChild(mkEl('text',{x:tx(34)+3,y:wy(lW)+3,fill:'#1e2e1e','font-size':8,'font-family':'IBM Plex Mono,monospace'},rh+'%'));
+    SVG.appendChild(mkEl('polyline',{points:pts.join(' '),fill:'none',stroke:rh===100?'#b8c8b8':'#d0dcd0','stroke-width':rh%20===0||rh===100?1:.55}));
+    const lW=Wfn(34,rh);if(lW>.2&&lW<W1-.5)SVG.appendChild(mkEl('text',{x:tx(34)+3,y:wy(lW)+3,fill:'#90a890','font-size':8,'font-family':'IBM Plex Mono,monospace'},rh+'%'));
   });
-  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'none',stroke:'#222e22','stroke-width':1}));
-  SVG.appendChild(mkEl('text',{x:M.left+CW/2,y:VH-5,'text-anchor':'middle',fill:'#405040','font-size':10,'font-family':'IBM Plex Mono,monospace'},'DRY BULB TEMPERATURE (°C)'));
-  SVG.appendChild(mkEl('text',{x:11,y:M.top+CH/2,'text-anchor':'middle',fill:'#405040','font-size':10,'font-family':'IBM Plex Mono,monospace',transform:`rotate(-90,11,${M.top+CH/2})`},'HUMIDITY RATIO W (g/kg dry air)'));
-  SVG.appendChild(mkEl('g',{id:'og'}));
+  SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'none',stroke:'#b8c8b8','stroke-width':1}));
+  SVG.appendChild(mkEl('text',{x:M.left+CW/2,y:VH-5,'text-anchor':'middle',fill:'#5a6e5a','font-size':10,'font-family':'IBM Plex Mono,monospace'},'DRY BULB TEMPERATURE (°C)'));
+  SVG.appendChild(mkEl('text',{x:11,y:M.top+CH/2,'text-anchor':'middle',fill:'#5a6e5a','font-size':10,'font-family':'IBM Plex Mono,monospace',transform:`rotate(-90,11,${M.top+CH/2})`},'HUMIDITY RATIO W (g/kg dry air)'));
+  // Zoom group — wraps all chart content so zoom/pan transforms everything
+  const zg=mkEl('g',{id:'zoom-g',transform:'translate(0,0) scale(1)'});
+  // Move all children of SVG into zoom group
+  while(SVG.firstChild) zg.appendChild(SVG.firstChild);
+  // Add overlay group inside zoom group
+  zg.appendChild(mkEl('g',{id:'og'}));
+  SVG.appendChild(zg);
+  // Clip path so zoomed content doesn't overflow chart area
+  const clipDef=mkEl('defs',{});
+  const cp=mkEl('clipPath',{id:'chart-clip'});
+  cp.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH}));
+  clipDef.appendChild(cp);
+  SVG.insertBefore(clipDef,SVG.firstChild);
 }
 
 // ════════════════════════════════════════════════
@@ -554,8 +592,8 @@ function setMode(m){
 
 function switchTab(n){
   activeTab=n;
-  ['guidance','diagnostics','log'].forEach(t=>{document.getElementById('pane-'+t).classList.toggle('active',t===n);});
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['guidance','diagnostics','log'][i]===n));
+  ['guidance','diagnostics','design','log'].forEach(t=>{document.getElementById('pane-'+t).classList.toggle('active',t===n);});
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['guidance','diagnostics','design','log'][i]===n));
 }
 
 // ════════════════════════════════════════════════
@@ -616,6 +654,35 @@ function calc(){
         oaHelpsDehumid,oaHelpsCool,oaHurts};
     }
   }
+  // Design Basis
+  const sf2=id=>{const v=parseFloat(document.getElementById(id)?.value);return isNaN(v)?null:v;};
+  const dbAlt=sf2('db-alt'), dbCCkw=sf2('db-cc-kw'), dbHCkw=sf2('db-hc-kw');
+  const dbAdp=sf2('db-adp'), dbBf=sf2('db-bf');
+  const dbSupT=sf2('db-sup-t'), dbSupRH=sf2('db-sup-rh');
+  const dbOaPct=sf2('db-oa-pct'), dbCfm=sf2('db-cfm');
+  const hasDB = dbAdp!==null || dbBf!==null || dbCCkw!==null;
+  if(hasDB){
+    const patm=getPatm();
+    const dbSupW = dbSupT!==null&&dbSupRH!==null ? Wfn(dbSupT,dbSupRH,patm) : null;
+    // Theoretical min supply W from ADP + BF: W_leaving = W_entering*(BF) + W_adp*(1-BF)
+    // We can compute theoretical leaving W if we know entering W (mixed air)
+    let theorMinSupW = null;
+    if(dbAdp!==null && dbBf!==null){
+      const wAdp = pRHfn(dbAdp, Wfn(dbAdp,100,patm),patm) > 99 ? Wfn(dbAdp,100,patm) : Wfn(dbAdp,100,patm);
+      const enteringW = ss?.retW ?? cs.currW;
+      theorMinSupW = enteringW * dbBf + wAdp * (1 - dbBf);
+    }
+    // OA latent load: how much of coil capacity goes to handling OA moisture
+    let oaLatentLoad = null; // g/kg the coil must remove just for OA
+    if(dbOaPct!==null && ss?.oaW!=null){
+      const returnW = ss?.retW ?? cs.currW;
+      const mixedW = returnW*(1-dbOaPct/100) + ss.oaW*(dbOaPct/100);
+      oaLatentLoad = mixedW - returnW; // extra W added by OA vs pure recirculation
+    }
+    cs.db = {dbAlt,dbCCkw,dbHCkw,dbAdp,dbBf,dbSupT,dbSupRH,dbSupW,dbOaPct,dbCfm,hasDB,theorMinSupW,oaLatentLoad};
+  } else {
+    cs.db = null;
+  }
   document.getElementById('results').classList.add('on');
   document.getElementById('dot-in').classList.add('on');
   document.getElementById('dot-guide').classList.add('on');
@@ -638,7 +705,7 @@ function calc(){
   if(dW>tolW/2){wc.className='mcard mr';cc.className='cmp-num vr';we.innerHTML=`Room holds <strong>${cW.toFixed(2)} g/kg</strong> — target is <strong>${sW.toFixed(2)} g/kg</strong> (acceptable up to ${spWhi.toFixed(2)} g/kg with ±${tolRH}% tolerance). Must remove <strong>${dW.toFixed(2)} g/kg</strong> per kg of dry air.`;}
   else if(dW<-tolW/2){wc.className='mcard mb';cc.className='cmp-num vb';we.innerHTML=`Room W (${cW.toFixed(2)}) is below target (${sW.toFixed(2)}), within the ±${tolRH}% tolerance band. Air is dry enough — focus on temperature.`;}
   else{wc.className='mcard mg';cc.className='cmp-num vb';we.innerHTML=`Humidity ratio is within the tolerance band. Room W (${cW.toFixed(2)} g/kg) is within ±${tolRH}% of target (acceptable: ${spWlo.toFixed(2)}–${spWhi.toFixed(2)} g/kg). Focus on temperature.`;}
-  updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); redraw();
+  updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); if(mode===2) updateDesign(); redraw();
 }
 
 // ════════════════════════════════════════════════
@@ -736,6 +803,135 @@ function buildDehumidActions(valve,fan,valveFull,valveNearFull,fanLow,chwCanDrop
   acts.push(`After each adjustment wait 5-10 minutes for conditions to stabilise, then re-read and log. Target: Projected RH at ${spT} degrees should fall toward ${cs?cs.spRH:55}%`);
   return acts;
 }
+// ════════════════════════════════════════════════
+// DESIGN BASIS vs ACTUAL (mode 2)
+// ════════════════════════════════════════════════
+function updateDesign(){
+  const con=document.getElementById('design-content');
+  if(!cs){con.innerHTML='<div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Click Calculate to see design analysis</div></div>';return;}
+  const patm=getPatm();
+  const alt=parseFloat(document.getElementById('site-alt')?.value||0)||0;
+  con.innerHTML='';
+
+  // ── ALTITUDE / PATM ──
+  const altCard=document.createElement('div');
+  const altDiff=Math.abs(patm-PATM_SEA);
+  if(alt>50){
+    altCard.className='mcard mb';
+    altCard.innerHTML=`<div class="mc-lbl">Site Altitude &amp; Atmospheric Pressure</div>
+    <div class="mc-big vb">${patm.toFixed(2)} kPa</div>
+    <div class="mc-exp">Site altitude: <strong>${alt} m</strong>. Atmospheric pressure: <strong>${patm.toFixed(2)} kPa</strong> vs sea level 101.325 kPa (${altDiff.toFixed(2)} kPa lower).
+    At this altitude, for the same dry-bulb temperature and RH, humidity ratio W is approximately <strong>${(altDiff/101.325*100).toFixed(1)}% higher</strong> than sea-level calculations would suggest.
+    All W and RH calculations in this tool are automatically corrected for this site pressure.</div>
+    <span class="verdict vinfo">Altitude correction active — all calculations use ${patm.toFixed(2)} kPa</span>`;
+  } else {
+    altCard.className='mcard mg';
+    altCard.innerHTML=`<div class="mc-lbl">Site Altitude &amp; Atmospheric Pressure</div>
+    <div class="mc-big vg">${patm.toFixed(2)} kPa</div>
+    <div class="mc-exp">Site altitude: <strong>${alt} m</strong>. Atmospheric pressure is effectively at sea level (101.325 kPa). No altitude correction needed. For sites above 200 m (e.g. Bangalore ~920 m, Hyderabad ~541 m), enter the actual altitude for accurate W calculations.</div>
+    <span class="verdict vok">Sea-level pressure — no correction needed</span>`;
+  }
+  con.appendChild(altCard);
+
+  if(!cs.db||!cs.db.hasDB){
+    con.innerHTML+='<div class="info-note" style="margin-top:12px">Enter Design Basis parameters in the left panel (HAP Coil ADP, Bypass Factor, capacities, design supply conditions) to unlock design vs actual comparison.</div>';
+    return;
+  }
+
+  const{dbAdp,dbBf,dbCCkw,dbHCkw,dbSupT,dbSupRH,dbSupW,dbOaPct,dbCfm,theorMinSupW,oaLatentLoad}=cs.db;
+  const{currT,currRH,currW,spT,spRH,spW}=cs;
+  const actualSupW=ss?.supW??null;
+  const actualRetW=ss?.retW??null;
+  const actualCoilDW=ss?.coilDeltaW??null;
+
+  // ── ADP + BYPASS FACTOR ──
+  if(dbAdp!==null&&dbBf!==null){
+    con.innerHTML+=`<div class="sec">Coil Geometry — ADP &amp; Bypass Factor</div>`;
+    const adpCard=document.createElement('div');
+    const wAdp=Wfn(dbAdp,100,patm);
+    adpCard.className='mcard mb';
+    adpCard.innerHTML=`<div class="mc-lbl">Coil ADP &amp; Theoretical Minimum Supply W</div>
+    <div class="mc-big vb">${dbAdp.toFixed(1)}°C  BF=${dbBf.toFixed(3)}</div>
+    <div class="mc-exp">
+    <strong>Apparatus Dew Point (ADP): ${dbAdp.toFixed(1)}°C</strong> — the effective coil surface temperature. At this temperature, saturated air has W = ${wAdp.toFixed(2)} g/kg. This is the thermodynamic target the coil surface aims for.<br><br>
+    <strong>Bypass Factor: ${dbBf.toFixed(3)}</strong> — means ${(dbBf*100).toFixed(1)}% of the airstream bypasses the coil without contacting it. This is a fixed physical property of this coil's fin spacing and geometry.<br><br>
+    ${theorMinSupW!==null?`<strong>Theoretical minimum achievable supply W: ${theorMinSupW.toFixed(2)} g/kg</strong><br>Calculated as: Entering W × BF + ADP W × (1−BF) = ${(actualRetW??currW).toFixed(2)} × ${dbBf.toFixed(3)} + ${wAdp.toFixed(2)} × ${(1-dbBf).toFixed(3)} = ${theorMinSupW.toFixed(2)} g/kg.<br><br>
+    ${actualSupW!==null?`Actual supply W is ${actualSupW.toFixed(2)} g/kg vs theoretical min ${theorMinSupW.toFixed(2)} g/kg. ${actualSupW>theorMinSupW+0.2?`<strong>Gap: +${(actualSupW-theorMinSupW).toFixed(2)} g/kg above theoretical</strong> — the coil is not achieving its design BF performance. Possible causes: coil fouling, higher-than-design CHW supply temperature, or valve not fully controlling flow.`:`Coil is performing at or near design BF. ✓`}`:''}
+    `:''}
+    </div>
+    <span class="verdict ${theorMinSupW!==null&&theorMinSupW>spW+0.1?'vbad':theorMinSupW!==null&&theorMinSupW<=spW+0.1?'vok':'vinfo'}">
+    ${theorMinSupW!==null?(theorMinSupW>spW+0.1?`✗ Theoretical min W (${theorMinSupW.toFixed(2)}) > target W (${spW.toFixed(2)}) — design has no margin`:`✓ Theoretical min W (${theorMinSupW.toFixed(2)}) ≤ target W (${spW.toFixed(2)})`):'Enter supply/return sensor data for full comparison'}
+    </span>`;
+    con.appendChild(adpCard);
+  }
+
+  // ── CAPACITY COMPARISON ──
+  if(dbCCkw!==null){
+    con.innerHTML+=`<div class="sec">Cooling &amp; Heating Capacity</div>`;
+    const capCard=document.createElement('div');
+    // Estimate current demand from coil DW and airflow
+    let demandKw=null, usePct=null;
+    if(actualCoilDW!==null&&dbCfm!==null){
+      // Q = airflow (kg/s) * (h_entering - h_leaving)
+      // Airflow in kg/s from CFM: 1 CFM ≈ 0.000472 m³/s × 1.2 kg/m³ ≈ 0.000566 kg/s
+      // But we don't have entering h accurately without return T — estimate from coilDW and latent heat
+      const cfmKgS=dbCfm*0.000566;
+      // Latent only: Q_lat = mass_flow × deltaW_kg/kg × 2501 kJ/kg
+      demandKw=cfmKgS*(actualCoilDW/1000)*2501;
+      usePct=Math.round(100*demandKw/dbCCkw);
+    }
+    capCard.className='mcard '+(usePct!==null&&usePct>90?'mr':usePct!==null&&usePct>70?'ma':'mg');
+    capCard.innerHTML=`<div class="mc-lbl">Cooling Capacity — Design vs Estimated Demand</div>
+    <div class="mc-big ${usePct!==null&&usePct>90?'vr':usePct!==null&&usePct>70?'va':'vg'}">${dbCCkw.toFixed(1)} kW design</div>
+    <div class="mc-exp">Design cooling capacity: <strong>${dbCCkw.toFixed(1)} kW</strong>${dbHCkw?` · Design heating capacity: <strong>${dbHCkw.toFixed(1)} kW</strong>`:''}.<br><br>
+    ${demandKw!==null?`Estimated current latent cooling demand (from measured coil ΔW = ${actualCoilDW.toFixed(2)} g/kg at ${dbCfm} CFM): <strong>${demandKw.toFixed(1)} kW latent</strong> — approximately <strong>${usePct}%</strong> of design capacity on latent load alone. This does not include sensible cooling load.`:'Enter Design Airflow (CFM) to estimate current demand vs capacity.'}
+    ${dbHCkw&&dbCCkw?`<br><br>Reheat-to-cooling ratio: <strong>${(dbHCkw/dbCCkw*100).toFixed(0)}%</strong>. In a cooling+reheat OT strategy, the heater must offset the overcooling used for dehumidification. A ratio below 25% means limited reheat headroom — any aggressive dehumidification strategy requires the heater to run near capacity.`:''}
+    </div>`;
+    con.appendChild(capCard);
+  }
+
+  // ── OA LATENT LOAD IMPACT ──
+  if(dbOaPct!==null){
+    con.innerHTML+=`<div class="sec">Outside Air Latent Load Impact</div>`;
+    const oaCard=document.createElement('div');
+    const oaW=ss?.oaW??null;
+    if(oaW!==null&&oaLatentLoad!==null){
+      const oaBad=oaLatentLoad>0.3;
+      oaCard.className='mcard '+(oaBad?'mr':'mg');
+      const mixedW=actualRetW!==null?(actualRetW*(1-dbOaPct/100)+oaW*(dbOaPct/100)):null;
+      oaCard.innerHTML=`<div class="mc-lbl">OA Latent Load on Coil (${dbOaPct.toFixed(1)}% OA fraction)</div>
+      <div class="mc-big ${oaBad?'vr':'vg'}">${oaLatentLoad>0?'+':''}${oaLatentLoad.toFixed(2)} g/kg</div>
+      <div class="mc-exp">With <strong>${dbOaPct.toFixed(1)}% outside air</strong> at W = ${oaW.toFixed(2)} g/kg mixed with return air at W = ${(actualRetW??currW).toFixed(2)} g/kg, the mixed air entering the coil is at approximately <strong>W = ${mixedW?mixedW.toFixed(2):'~'} g/kg</strong>.<br><br>
+      ${oaBad?`The OA is adding <strong>${oaLatentLoad.toFixed(2)} g/kg</strong> of moisture to the airstream versus pure recirculation. This means <strong>${oaLatentLoad.toFixed(2)} g/kg of the coil's dehumidification capacity is consumed just by the ventilation air</strong>, before any room moisture load is addressed. In high-humidity outdoor conditions (monsoon), this fraction grows and can consume the entire coil margin.`
+      :`OA W is close to or lower than return air W — ventilation air is not adding significant latent load at current outdoor conditions.`}
+      <br><br>Design coil was sized for OA W of approximately ${((spW+(1/dbBf-1)*spW)*0.1+18).toFixed(1)} g/kg (Bangalore peak). If current OA W exceeds design OA assumption, the system is operating outside its design envelope.</div>
+      <span class="verdict ${oaBad?'vbad':'vok'}">${oaBad?`OA consuming ${oaLatentLoad.toFixed(2)} g/kg of coil capacity`:'OA latent load within acceptable range'}</span>`;
+    } else {
+      oaCard.className='mcard ma';
+      oaCard.innerHTML=`<div class="mc-lbl">OA Latent Load on Coil</div><div class="mc-exp">Design OA fraction: <strong>${dbOaPct.toFixed(1)}%</strong>. Enter OA conditions (T and RH in the OA sensor section) and return duct readings to calculate how much coil capacity is consumed by ventilation air vs room load.</div>`;
+    }
+    con.appendChild(oaCard);
+  }
+
+  // ── DESIGN SUPPLY vs ACTUAL SUPPLY ──
+  if(dbSupW!==null&&actualSupW!==null){
+    con.innerHTML+=`<div class="sec">Design Supply Conditions vs Actual</div>`;
+    const dsCard=document.createElement('div');
+    const wGap=actualSupW-dbSupW;
+    const tGap=ss?ss.supT-dbSupT:null;
+    dsCard.className='mcard '+(Math.abs(wGap)>0.3||Math.abs(tGap??0)>1.5?'mr':'mg');
+    dsCard.innerHTML=`<div class="mc-lbl">Design Supply State vs Measured Supply State</div>
+    <div class="mc-big ${Math.abs(wGap)>0.3?'vr':'vg'}">${actualSupW.toFixed(2)} g/kg</div>
+    <div class="mc-exp">
+    <strong>W comparison:</strong> Design supply W = ${dbSupW.toFixed(2)} g/kg · Actual supply W = ${actualSupW.toFixed(2)} g/kg · Gap = <strong>${wGap>0?'+':''}${wGap.toFixed(2)} g/kg</strong>.<br>
+    ${wGap>0.2?`Actual supply air is carrying <strong>${wGap.toFixed(2)} g/kg more moisture than design</strong>. The coil is under-performing relative to its design spec. This is a measurable degradation — the coil was designed to deliver ${dbSupW.toFixed(2)} g/kg but is delivering ${actualSupW.toFixed(2)} g/kg.`:`Supply W is at or below design — coil moisture performance is meeting or exceeding design spec.`}
+    ${tGap!==null?`<br><br><strong>T comparison:</strong> Design supply T = ${dbSupT}°C · Actual = ${ss.supT.toFixed(1)}°C · Gap = ${tGap>0?'+':''}${tGap.toFixed(1)}°C. ${Math.abs(tGap)>1.5?'Significant temperature deviation from design — check heater output and coil leaving temperature.':''}`:''}
+    </div>
+    <span class="verdict ${Math.abs(wGap)>0.3?'vbad':'vok'}">${Math.abs(wGap)>0.3?`Coil underperforming vs design by ${wGap.toFixed(2)} g/kg`:'Supply conditions match design'}</span>`;
+    con.appendChild(dsCard);
+  }
+}
+
 // ════════════════════════════════════════════════
 // SYSTEM DIAGNOSTICS (mode 2) — improved language
 // ════════════════════════════════════════════════
@@ -896,8 +1092,8 @@ function redraw(){
   const g=mkEl('g',{id:'og'});
   if(!cs){SVG.appendChild(g);return;}
   const{currT,currW,spT,spW}=cs;
-  if(currW>=W0&&currW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(currW),x2:M.left+CW,y2:wy(currW),stroke:'#5aabff','stroke-width':1,'stroke-dasharray':'5,3',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(currW)-4,'text-anchor':'end',fill:'#5aabff','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},currW.toFixed(1)));}
-  if(spW>=W0&&spW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(spW),x2:M.left+CW,y2:wy(spW),stroke:'#40d870','stroke-width':1,'stroke-dasharray':'4,2',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(spW)-4,'text-anchor':'end',fill:'#40d870','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},spW.toFixed(1)));}
+  if(currW>=W0&&currW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(currW),x2:M.left+CW,y2:wy(currW),stroke:'#5aabff','stroke-width':1,'stroke-dasharray':'5,3',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(currW)-4,'text-anchor':'end',fill:'#1a6abf','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},currW.toFixed(1)));}
+  if(spW>=W0&&spW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(spW),x2:M.left+CW,y2:wy(spW),stroke:'#40d870','stroke-width':1,'stroke-dasharray':'4,2',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(spW)-4,'text-anchor':'end',fill:'#1a7a40','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},spW.toFixed(1)));}
   g.appendChild(mkEl('line',{x1:tx(spT),y1:M.top,x2:tx(spT),y2:M.top+CH,stroke:'#40d870','stroke-width':.8,'stroke-dasharray':'2,4',opacity:.22}));
   if(Math.abs(currW-spW)>.1){const y1=wy(Math.max(currW,spW)),y2=wy(Math.min(currW,spW));g.appendChild(mkEl('rect',{x:M.left,y:y1,width:CW,height:y2-y1,fill:currW>spW?'rgba(240,72,72,.05)':'rgba(64,216,112,.05)'}));}
   if(mode===2&&ss){
@@ -908,15 +1104,31 @@ function redraw(){
       g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(supW),r:4.5,fill:'none',stroke:'#5aabff','stroke-width':1.5,'stroke-dasharray':'3,2',opacity:.8}));
     }
     if(hasReturn&&inB(retT,supW)&&inB(supT,supW))g.appendChild(mkEl('line',{x1:tx(retT).toFixed(1),y1:wy(supW).toFixed(1),x2:tx(supT).toFixed(1),y2:wy(supW).toFixed(1),stroke:'#f04848','stroke-width':2,opacity:.7,'marker-end':'url(#arr-red)'}));
-    if(hasReturn&&inB(retT,retW)){g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:9,fill:'#ff8c30',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:5.5,fill:'#ff8c30'}));g.appendChild(mkEl('text',{x:tx(retT)+9,y:wy(retW)-6,fill:'#ff8c30','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`RET ${retT.toFixed(1)}°`));}
-    if(inB(supT,supW)){g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:9,fill:'#30e8d8',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:5.5,fill:'#30e8d8'}));g.appendChild(mkEl('text',{x:tx(supT)+9,y:wy(supW)-6,fill:'#30e8d8','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`SUP ${supT.toFixed(1)}°`));}
+    if(hasReturn&&inB(retT,retW)){g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:9,fill:'#ff8c30',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(retW),r:5.5,fill:'#ff8c30'}));g.appendChild(mkEl('text',{x:tx(retT)+9,y:wy(retW)-6,fill:'#b85810','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`RET ${retT.toFixed(1)}°`));}
+    if(inB(supT,supW)){g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:9,fill:'#30e8d8',opacity:.12}));g.appendChild(mkEl('circle',{cx:tx(supT),cy:wy(supW),r:5.5,fill:'#30e8d8'}));g.appendChild(mkEl('text',{x:tx(supT)+9,y:wy(supW)-6,fill:'#0a7870','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`SUP ${supT.toFixed(1)}°`));}
   }
   if(traj.length>1){const pts=traj.map(s=>`${tx(s.t).toFixed(1)},${wy(s.w).toFixed(1)}`).join(' ');g.appendChild(mkEl('polyline',{points:pts,fill:'none',stroke:'#f0b030','stroke-width':2,opacity:.65,'stroke-linejoin':'round'}));}
   traj.forEach((s,i)=>{const cx=tx(s.t),cy=wy(s.w),isSel=i===sel;if(isSel)g.appendChild(mkEl('circle',{cx,cy,r:'9',fill:'none',stroke:'#f0b030','stroke-width':'2',class:'pr'}));g.appendChild(mkEl('circle',{cx,cy,r:isSel?6.5:5.5,fill:'#f0b030',stroke:isSel?'#fff':'#806010','stroke-width':isSel?1.5:1}));g.appendChild(mkEl('text',{x:cx+9,y:cy-5,fill:isSel?'#f0b030':'#806010','font-size':9.5,'font-family':'IBM Plex Mono,monospace','font-weight':isSel?'500':'400'},String(i+1)));});
-  if(spT>=T0&&spT<=T1&&currW>=W0&&currW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(currW),r:5.5,fill:'none',stroke:'#b088ff','stroke-width':1.8,'stroke-dasharray':'3,2',opacity:.85}));g.appendChild(mkEl('text',{x:tx(spT)+9,y:wy(currW)-4,fill:'#b088ff','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.85},pRHfn(spT,currW).toFixed(0)+'%?'));}
-  if(spT>=T0&&spT<=T1&&spW>=W0&&spW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:10,fill:'#40d870',opacity:.11}));g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:6,fill:'#40d870'}));g.appendChild(mkEl('text',{x:tx(spT)+10,y:wy(spW)-7,fill:'#40d870','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`SP:${spT}°/${cs.spRH}%`));}
-  const ccx=tx(currT),ccy=wy(Math.min(currW,W1));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:10,fill:'#5aabff',opacity:.1}));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:6,fill:'#5aabff'}));g.appendChild(mkEl('text',{x:ccx+10,y:ccy-7,fill:'#5aabff','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.9},`${cs.currT}°/${cs.currRH}%`));
-  if(sel!==null&&traj[sel]){const s=traj[sel],bx=tx(s.t),by=wy(s.w),bw=148,bh=56;let lx=bx+14;if(lx+bw>M.left+CW)lx=bx-bw-14;let ly=by-14;if(ly+bh>M.top+CH)ly=by-bh-14;g.appendChild(mkEl('rect',{x:lx,y:ly,width:bw,height:bh,fill:'#0c0e0d',stroke:'#f0b030','stroke-width':1,rx:2}));g.appendChild(mkEl('text',{x:lx+8,y:ly+15,fill:'#f0b030','font-size':10,'font-family':'IBM Plex Mono,monospace','font-weight':'500'},`#${sel+1}  ${s.t}°C / ${s.rh}% RH`));g.appendChild(mkEl('text',{x:lx+8,y:ly+28,fill:'#a0b09c','font-size':9,'font-family':'IBM Plex Mono,monospace'},`W=${s.w.toFixed(2)}  ProjRH=${s.projRH.toFixed(1)}%`));g.appendChild(mkEl('text',{x:lx+8,y:ly+41,fill:'#566052','font-size':8,'font-family':'IBM Plex Mono,monospace'},`V:${s.valve}% Fan:${s.fan}% Heat:${s.heater}%`));}
+  if(spT>=T0&&spT<=T1&&currW>=W0&&currW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(currW),r:5.5,fill:'none',stroke:'#b088ff','stroke-width':1.8,'stroke-dasharray':'3,2',opacity:.85}));g.appendChild(mkEl('text',{x:tx(spT)+9,y:wy(currW)-4,fill:'#5830a8','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.9},pRHfn(spT,currW).toFixed(0)+'%?'));}
+  // ADP point (design basis)
+  if(cs.db&&cs.db.dbAdp!=null){
+    const adpT=cs.db.dbAdp;
+    const adpW=Wfn(adpT,100,getPatm());
+    if(adpT>=T0&&adpT<=T1&&adpW>=W0&&adpW<=W1){
+      const ax=tx(adpT),ay=wy(adpW);
+      g.appendChild(mkEl('polygon',{points:`${ax},${ay-8} ${ax+7},${ay} ${ax},${ay+8} ${ax-7},${ay}`,fill:'#6a38a8',opacity:'0.85'}));
+      g.appendChild(mkEl('text',{x:ax+10,y:ay+4,fill:'#6a38a8','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:'0.9'},'ADP'));
+      // Contact factor line from entering air to ADP
+      const enterW=ss&&ss.retW?ss.retW:cs.currW;
+      const enterT=ss&&ss.retT?ss.retT:cs.currT;
+      if(enterT>=T0&&enterT<=T1&&enterW>=W0&&enterW<=W1){
+        g.appendChild(mkEl('line',{x1:tx(enterT).toFixed(1),y1:wy(enterW).toFixed(1),x2:ax.toFixed(1),y2:ay.toFixed(1),stroke:'#6a38a8','stroke-width':1.5,'stroke-dasharray':'5,3',opacity:'0.5','marker-end':'url(#arr-purple)'}));
+      }
+    }
+  }
+  if(spT>=T0&&spT<=T1&&spW>=W0&&spW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:10,fill:'#40d870',opacity:.11}));g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:6,fill:'#40d870'}));g.appendChild(mkEl('text',{x:tx(spT)+10,y:wy(spW)-7,fill:'#1a7a40','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`SP:${spT}°/${cs.spRH}%`));}
+  const ccx=tx(currT),ccy=wy(Math.min(currW,W1));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:10,fill:'#5aabff',opacity:.1}));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:6,fill:'#5aabff'}));g.appendChild(mkEl('text',{x:ccx+10,y:ccy-7,fill:'#1a6abf','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`${cs.currT}°/${cs.currRH}%`));
+  if(sel!==null&&traj[sel]){const s=traj[sel],bx=tx(s.t),by=wy(s.w),bw=148,bh=56;let lx=bx+14;if(lx+bw>M.left+CW)lx=bx-bw-14;let ly=by-14;if(ly+bh>M.top+CH)ly=by-bh-14;g.appendChild(mkEl('rect',{x:lx,y:ly,width:bw,height:bh,fill:'#ffffff',stroke:'#b86800','stroke-width':1,rx:2}));g.appendChild(mkEl('text',{x:lx+8,y:ly+15,fill:'#b86800','font-size':10,'font-family':'IBM Plex Mono,monospace','font-weight':'500'},`#${sel+1}  ${s.t}°C / ${s.rh}% RH`));g.appendChild(mkEl('text',{x:lx+8,y:ly+28,fill:'#404840','font-size':9,'font-family':'IBM Plex Mono,monospace'},`W=${s.w.toFixed(2)}  ProjRH=${s.projRH.toFixed(1)}%`));g.appendChild(mkEl('text',{x:lx+8,y:ly+41,fill:'#7a887a','font-size':8,'font-family':'IBM Plex Mono,monospace'},`V:${s.valve}% Fan:${s.fan}% Heat:${s.heater}%`));}
   SVG.appendChild(g);
 }
 
@@ -1290,9 +1502,9 @@ function drawTs(){
   const spRH=parseFloat(document.getElementById('ts-sp-rh').value)||55;
   const targetW=Wfn(spT,spRH);
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#0a0c0a';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#f8faf8';ctx.fillRect(0,0,W,H);
   if(!tsData){
-    ctx.fillStyle='#384038';ctx.font='14px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('Upload a CSV file to view time series',W/2,H/2);return;
+    ctx.fillStyle='#9aaa9a';ctx.font='14px IBM Plex Mono,monospace';ctx.textAlign='center';ctx.fillText('Upload a CSV file to view time series',W/2,H/2);return;
   }
   const{data}=tsData;
   const showAW=document.getElementById('tog-aW').checked;
@@ -1326,11 +1538,11 @@ function drawTs(){
   const cyt=t=>Mtop+ch-(t-tMin)/(tMax-tMin)*ch;
 
   // W grid
-  ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+  ctx.strokeStyle='#dce8dc';ctx.lineWidth=0.7;
   for(let w=wMin;w<=wMax;w+=0.5){
     const y=cyw(w);if(y<Mtop||y>Mtop+ch)continue;
     ctx.beginPath();ctx.moveTo(Mleft,y);ctx.lineTo(Mleft+cw,y);ctx.stroke();
-    if(w===Math.round(w)){ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(w.toFixed(1),Mleft-4,y+3);}
+    if(w===Math.round(w)){ctx.fillStyle='#607860';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='right';ctx.fillText(w.toFixed(1),Mleft-4,y+3);}
   }
   // Time axis gridlines (shared)
   const msPerHour=3600000;
@@ -1340,14 +1552,14 @@ function drawTs(){
   for(let t=startTick.getTime();t<=t1;t+=tickInterval){
     if(t<t0)continue;
     const x=cx(t);
-    ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+    ctx.strokeStyle='#dce8dc';ctx.lineWidth=0.7;
     ctx.beginPath();ctx.moveTo(x,Mtop);ctx.lineTo(x,Mtop+ch+(hasCtrlData?dividerH+ctrlPanelH:0));ctx.stroke();
     const d=new Date(t);
-    ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='center';
+    ctx.fillStyle='#607860';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='center';
     const label=totalMs<=4*3600000?`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`:`${String(d.getHours()).padStart(2,'0')}:00`;
     ctx.fillText(label,x,Mtop+ch+(hasCtrlData?dividerH+ctrlPanelH:0)+Mbottom-18);
   }
-  ctx.strokeStyle='#222e22';ctx.lineWidth=1;ctx.strokeRect(Mleft,Mtop,cw,ch);
+  ctx.strokeStyle='#b8c8b8';ctx.lineWidth=1;ctx.strokeRect(Mleft,Mtop,cw,ch);
 
   // Target W line
   const tyW=cyw(targetW);
@@ -1365,7 +1577,7 @@ function drawTs(){
     const cytR=t=>Mtop+ch-(t-tMinR)/(tMaxR-tMinR)*ch;
     for(let t=tMinR;t<=tMaxR;t+=2){
       const y=cytR(t);if(y<Mtop||y>Mtop+ch)continue;
-      ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
+      ctx.fillStyle='#607860';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
       ctx.fillText(t+'°',Mleft+cw+3,y+3);
     }
     if(showT){
@@ -1374,13 +1586,13 @@ function drawTs(){
       ctx.stroke();ctx.setLineDash([]);
     }
     if(showOaT){
-      ctx.strokeStyle='rgba(144,176,48,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+      ctx.strokeStyle='rgba(74,112,16,0.7)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
       ctx.beginPath();let first=true;
       data.forEach(d=>{if(d.oaT==null)return;const x=cx(d.epoch),y=cytR(d.oaT);first?(ctx.moveTo(x,y),first=false):ctx.lineTo(x,y);});
       ctx.stroke();ctx.setLineDash([]);
     }
     ctx.fillStyle='rgba(160,176,156,0.5)';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('T°C',Mleft+cw+3,Mtop+8);
-    if(showOaT){ctx.fillStyle='rgba(144,176,48,0.7)';ctx.fillText('OAT',Mleft+cw+3,Mtop+18);}
+    if(showOaT){ctx.fillStyle='rgba(74,112,16,0.8)';ctx.fillText('OAT',Mleft+cw+3,Mtop+18);}
   }
 
   // Coil DW mini bars (at bottom of W panel)
@@ -1388,14 +1600,14 @@ function drawTs(){
     const barH=Math.min(ch*0.12,20);
     const barY=Mtop+ch-barH;
     const coilRange=Math.max(Math.abs(Math.min(...data.map(d=>d.coilDW))),Math.max(...data.map(d=>d.coilDW)),1);
-    ctx.fillStyle='rgba(20,20,20,0.6)';ctx.fillRect(Mleft,barY,cw,barH);
+    ctx.fillStyle='rgba(240,244,240,0.85)';ctx.fillRect(Mleft,barY,cw,barH);
     data.forEach(d=>{
       const x=cx(d.epoch),barLen=(d.coilDW/coilRange)*(barH*0.9);
       ctx.fillStyle=d.coilDW>0?'rgba(48,232,216,0.55)':'rgba(240,72,72,0.55)';
       if(barLen>0)ctx.fillRect(x-0.5,barY+barH-barLen,1,barLen);
       else ctx.fillRect(x-0.5,barY+barH,1,-barLen);
     });
-    ctx.fillStyle='#566052';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';
+    ctx.fillStyle='#7a8a7a';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='left';
     ctx.fillText('Coil ΔW  ▲=removing  ▼=adding',Mleft+3,barY+8);
   }
 
@@ -1406,7 +1618,7 @@ function drawTs(){
   if(showAW)drawLine(data.map(d=>({epoch:d.epoch,w:d.aW})),'#5aabff',1,2);
 
   // Y axis label
-  ctx.fillStyle='#405040';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle='#506850';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
   ctx.save();ctx.translate(12,Mtop+ch/2);ctx.rotate(-Math.PI/2);ctx.fillText('W (g/kg)',0,0);ctx.restore();
 
   // ── CONTROL PANEL ──
@@ -1414,19 +1626,19 @@ function drawTs(){
     const cy0=Mtop+ch+dividerH;
     const cyh=ctrlPanelH;
     // Panel bg + border
-    ctx.fillStyle='#090b09';ctx.fillRect(Mleft,cy0,cw,cyh);
-    ctx.strokeStyle='#222e22';ctx.lineWidth=1;ctx.strokeRect(Mleft,cy0,cw,cyh);
+    ctx.fillStyle='#f0f2f0';ctx.fillRect(Mleft,cy0,cw,cyh);
+    ctx.strokeStyle='#b8c8b8';ctx.lineWidth=1;ctx.strokeRect(Mleft,cy0,cw,cyh);
     // Divider label
-    ctx.fillStyle='#2e3e2e';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
+    ctx.fillStyle='#607860';ctx.font='9px IBM Plex Mono,monospace';ctx.textAlign='left';
     ctx.fillText('CONTROL VARIABLES (%)',Mleft+4,cy0-2);
     // Scale: 0-100%
     const cyc=pct=>cy0+cyh-(pct/100)*cyh;
     // Grid lines at 0, 25, 50, 75, 100
     [0,25,50,75,100].forEach(p=>{
       const y=cyc(p);
-      ctx.strokeStyle='#131913';ctx.lineWidth=0.7;
+      ctx.strokeStyle='#dce8dc';ctx.lineWidth=0.7;
       ctx.beginPath();ctx.moveTo(Mleft,y);ctx.lineTo(Mleft+cw,y);ctx.stroke();
-      ctx.fillStyle='#2e3e2e';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='right';
+      ctx.fillStyle='#607860';ctx.font='8px IBM Plex Mono,monospace';ctx.textAlign='right';
       ctx.fillText(p+'%',Mleft-3,y+3);
     });
     // Draw control series
@@ -1453,7 +1665,7 @@ function drawTs(){
     if(showValve&&data.some(d=>d.valve!=null)){ctx.fillStyle='#5aabff';ctx.font='8.5px IBM Plex Mono,monospace';ctx.textAlign='left';ctx.fillText('● Valve%',legX,legY);legX+=60;}
     if(showFan&&data.some(d=>d.fanPct!=null)){ctx.fillStyle='#40d870';ctx.fillText('● Fan%',legX,legY);legX+=50;}
     if(showHeater&&data.some(d=>d.heater!=null)){ctx.fillStyle='#f04848';ctx.fillText('● Heater%',legX,legY);}
-    ctx.fillStyle='#405040';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
+    ctx.fillStyle='#506850';ctx.font='10px IBM Plex Mono,monospace';ctx.textAlign='center';
     ctx.save();ctx.translate(12,cy0+cyh/2);ctx.rotate(-Math.PI/2);ctx.fillText('CTRL %',0,0);ctx.restore();
   }
 
@@ -1533,6 +1745,122 @@ window.addEventListener('resize',()=>{if(mode==='ts'){resizeTs();drawTs();}});
 // ════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// CHART ZOOM & PAN
+// ════════════════════════════════════════════════
+let zoomState={scale:1,tx:0,ty:0};
+let isPanning=false, panStart={x:0,y:0};
+
+function applyZoom(){
+  const zg=document.getElementById('zoom-g');
+  if(!zg)return;
+  zg.setAttribute('transform',`translate(${zoomState.tx},${zoomState.ty}) scale(${zoomState.scale})`);
+  // Show reset button only when zoomed/panned
+  const btn=document.getElementById('chart-reset-btn');
+  if(btn) btn.style.display=(zoomState.scale!==1||zoomState.tx!==0||zoomState.ty!==0)?'block':'none';
+}
+
+function resetZoom(){
+  zoomState={scale:1,tx:0,ty:0};
+  applyZoom();
+}
+
+function getSVGPoint(evt){
+  const rect=SVG.getBoundingClientRect();
+  // SVG coordinate from client coordinate
+  const svgW=VW, svgH=VH;
+  const scaleX=svgW/rect.width, scaleY=svgH/rect.height;
+  return {
+    x:(evt.clientX-rect.left)*scaleX,
+    y:(evt.clientY-rect.top)*scaleY
+  };
+}
+
+SVG.addEventListener('wheel',function(e){
+  e.preventDefault();
+  const pt=getSVGPoint(e);
+  const delta=e.deltaY<0?1.18:1/1.18;
+  const newScale=Math.max(0.9,Math.min(12,zoomState.scale*delta));
+  // Zoom centered on cursor: adjust tx,ty so cursor stays fixed
+  zoomState.tx=pt.x - (pt.x - zoomState.tx)*(newScale/zoomState.scale);
+  zoomState.ty=pt.y - (pt.y - zoomState.ty)*(newScale/zoomState.scale);
+  zoomState.scale=newScale;
+  applyZoom();
+},{passive:false});
+
+SVG.addEventListener('mousedown',function(e){
+  if(e.button!==0)return;
+  isPanning=true;
+  const pt=getSVGPoint(e);
+  panStart={x:pt.x-zoomState.tx, y:pt.y-zoomState.ty};
+  SVG.style.cursor='grabbing';
+  e.preventDefault();
+});
+
+window.addEventListener('mousemove',function(e){
+  if(!isPanning)return;
+  const pt=getSVGPoint(e);
+  zoomState.tx=pt.x-panStart.x;
+  zoomState.ty=pt.y-panStart.y;
+  applyZoom();
+});
+
+window.addEventListener('mouseup',function(){
+  if(isPanning){isPanning=false;SVG.style.cursor='default';}
+});
+
+SVG.addEventListener('dblclick',function(e){
+  e.preventDefault();
+  resetZoom();
+});
+
+// Touch support
+let lastTouchDist=null;
+SVG.addEventListener('touchstart',function(e){
+  if(e.touches.length===1){
+    isPanning=true;
+    const t=e.touches[0];
+    const rect=SVG.getBoundingClientRect();
+    const sx=VW/rect.width,sy=VH/rect.height;
+    panStart={x:(t.clientX-rect.left)*sx-zoomState.tx,y:(t.clientY-rect.top)*sy-zoomState.ty};
+  } else if(e.touches.length===2){
+    const dx=e.touches[0].clientX-e.touches[1].clientX;
+    const dy=e.touches[0].clientY-e.touches[1].clientY;
+    lastTouchDist=Math.sqrt(dx*dx+dy*dy);
+  }
+  e.preventDefault();
+},{passive:false});
+
+SVG.addEventListener('touchmove',function(e){
+  const rect=SVG.getBoundingClientRect();
+  const sx=VW/rect.width,sy=VH/rect.height;
+  if(e.touches.length===1&&isPanning){
+    const t=e.touches[0];
+    zoomState.tx=(t.clientX-rect.left)*sx-panStart.x;
+    zoomState.ty=(t.clientY-rect.top)*sy-panStart.y;
+    applyZoom();
+  } else if(e.touches.length===2&&lastTouchDist!==null){
+    const dx=e.touches[0].clientX-e.touches[1].clientX;
+    const dy=e.touches[0].clientY-e.touches[1].clientY;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const delta=dist/lastTouchDist;
+    const midX=((e.touches[0].clientX+e.touches[1].clientX)/2-rect.left)*sx;
+    const midY=((e.touches[0].clientY+e.touches[1].clientY)/2-rect.top)*sy;
+    const newScale=Math.max(0.9,Math.min(12,zoomState.scale*delta));
+    zoomState.tx=midX-(midX-zoomState.tx)*(newScale/zoomState.scale);
+    zoomState.ty=midY-(midY-zoomState.ty)*(newScale/zoomState.scale);
+    zoomState.scale=newScale;
+    lastTouchDist=dist;
+    applyZoom();
+  }
+  e.preventDefault();
+},{passive:false});
+
+SVG.addEventListener('touchend',function(e){
+  if(e.touches.length<2)lastTouchDist=null;
+  if(e.touches.length===0)isPanning=false;
+});
+
 drawBase();syncLog();setMode(1);
 </script>
 </body>
