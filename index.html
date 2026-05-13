@@ -108,6 +108,40 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25);}
 .log-btn:hover{background:var(--blue);color:#000;}
 .clr-btn{width:100%;padding:7px 16px;background:transparent;border:1px solid var(--bdr-hi);color:var(--lo);font-family:var(--sans);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:5px;transition:all .15s;}
 .clr-btn:hover{border-color:var(--red);color:var(--red);}
+.rcp-copy-btn{width:100%;padding:9px 14px;background:transparent;border:1px solid var(--blue);color:var(--blue);font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:all .15s;}
+.rcp-copy-btn:hover{background:var(--blue);color:#fff;}
+.rcp-copy-btn.copied{background:var(--green);border-color:var(--green);color:#fff;}
+.rcp-meta{display:grid;grid-template-columns:72px 1fr;gap:3px 10px;margin:7px 0 4px;font-size:13px;}
+.rcp-meta-k{font-family:var(--mono);font-size:9.5px;color:var(--lo);text-transform:uppercase;letter-spacing:1px;padding-top:3px;}
+.rcp-meta-v{color:var(--hi);font-weight:500;line-height:1.55;}
+.rcp-meta-v code{font-family:var(--mono);font-size:12px;background:#f0f2f0;padding:1px 5px;border:1px solid var(--bdr);}
+.fgen-inp{width:100%;background:#f8faf8;border:1px solid var(--bdr-hi);color:var(--hi);font-family:var(--mono);font-size:11.5px;padding:7px 10px;outline:none;transition:border-color .15s;}
+.fgen-inp:focus{border-color:var(--cyan);}
+.fgen-inp::placeholder{color:var(--xlo);}
+.fgen-block{margin-bottom:12px;}
+.fgen-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:5px;font-weight:500;}
+.fgen-formula{background:#f0f4f0;border:1px solid var(--bdr);padding:9px 11px;font-family:var(--mono);font-size:11px;color:var(--hi);line-height:1.7;word-break:break-all;white-space:pre-wrap;}
+.fgen-copy{width:100%;padding:7px 12px;background:transparent;border:1px solid var(--bdr-hi);color:var(--lo);font-family:var(--mono);font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:4px;transition:all .15s;}
+.fgen-copy:hover{border-color:var(--cyan);color:var(--cyan);}
+.fgen-copy.copied{background:var(--green);border-color:var(--green);color:#fff;}
+.wmat-wrap{margin-top:14px;}
+.wmat-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lo);margin-bottom:0;}
+.wmat-toggle:hover{color:var(--amber);}
+.wmat-toggle::after{content:'';flex:1;height:1px;background:var(--bdr);}
+.wmat-caret{font-size:8px;transition:transform .2s;}
+.wmat-caret.open{transform:rotate(90deg);}
+.wmat-body{overflow-x:auto;margin-top:8px;display:none;}
+.wmat-body.on{display:block;}
+.wmat-note{font-family:var(--mono);font-size:10px;color:var(--lo);margin-bottom:6px;}
+.wmat-note span{color:var(--amber);}
+table.wmat{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:11px;}
+table.wmat th{background:#f0f2f0;color:var(--lo);font-weight:500;padding:4px 0;text-align:center;border:1px solid var(--bdr);letter-spacing:.5px;}
+table.wmat th.wmat-th-rh{color:var(--cyan);background:var(--cyan-bg);}
+table.wmat td{padding:4px 2px;text-align:center;border:1px solid var(--bdr);color:var(--txt);font-size:11px;}
+table.wmat td.wmat-t{background:#f0f2f0;color:var(--lo);font-weight:500;}
+table.wmat td.wmat-sp{background:var(--amber-bg);color:var(--amber-m);font-weight:600;}
+table.wmat td.wmat-room{background:var(--blue-bg);color:var(--blue-m);font-weight:600;outline:2px solid var(--blue);outline-offset:-2px;}
+table.wmat td.wmat-band{background:var(--green-bg);color:var(--green-m);}
 .chart-col{background:var(--bg);padding:10px 12px 6px;display:flex;flex-direction:column;min-height:0;}
 #psychro-chart{flex:1;width:100%;display:block;min-height:0;}
 .legend{display:flex;gap:12px;padding:5px 2px 0;font-family:var(--mono);font-size:9px;color:var(--lo);flex-wrap:wrap;flex-shrink:0;}
@@ -377,6 +411,13 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
       </div>
       <button class="log-btn" id="log-btn">+ Log This State</button>
       <button class="clr-btn" id="clr-btn">✕ Clear All Logged States</button>
+      <div class="wmat-wrap">
+        <div class="wmat-toggle" onclick="toggleWMat()"><span class="wmat-caret" id="wmat-caret">▶</span>W Target Matrix</div>
+        <div class="wmat-body" id="wmat-body">
+          <div class="wmat-note">W (g/kg) at site altitude &nbsp;—&nbsp; <span>amber</span> = setpoint, blue = room</div>
+          <div id="wmat-table"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -409,6 +450,7 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
     <button class="tab-btn" id="tab-diag-btn" onclick="switchTab('diagnostics')">System Diag.</button>
     <button class="tab-btn" id="tab-design-btn" onclick="switchTab('design')">Design vs Actual</button>
     <button class="tab-btn" onclick="switchTab('log')">State Log</button>
+    <button class="tab-btn" onclick="switchTab('recipe')">Recipe</button>
   </div>
   <div class="tab-pane active" id="pane-guidance">
     <div class="sec" style="margin-top:2px">Control Phase</div>
@@ -419,6 +461,22 @@ hr.div{border:none;border-top:1px solid var(--bdr);margin:12px 0;}
   <div class="tab-pane" id="pane-diagnostics"><div id="diag-content"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter supply duct sensor values and click Calculate</div></div></div></div>
   <div class="tab-pane" id="pane-design"><div id="design-content"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter Design Basis parameters in the inputs panel and click Calculate</div><div class="dtext">Design Basis data comes from your HAP or load calculation report. The tool will compare design intent vs actual measured performance and identify whether issues are control problems or capacity/design problems.</div></div></div></div>
   <div class="tab-pane" id="pane-log"><div class="sec" style="margin-top:2px">State Log</div><div id="log-m2"><div class="traj-empty">No states logged yet.</div></div></div>
+  <div class="tab-pane" id="pane-recipe">
+    <div id="recipe-output"><div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter values and click Calculate to generate a control recipe</div><div class="dtext">The recipe will show a stage-by-stage AHU control sequence with specific W thresholds, valve/fan targets, and exit conditions derived from your psychrometric analysis.</div></div></div>
+    <div id="formula-gen">
+      <hr class="div" style="margin-top:14px">
+      <div class="sec">DeJoule W Formula Generator</div>
+      <div class="dtext" style="margin-bottom:10px;font-size:13px">Enter sensor names exactly as in DeJoule. Altitude from site inputs. Valid for T = 10–24°C (covers supply air temps).</div>
+      <div id="fgen-patm-row" style="font-family:var(--mono);font-size:11px;color:var(--lo);margin-bottom:10px;display:none"></div>
+      <div style="font-size:13px;font-weight:500;color:var(--txt);margin-bottom:4px">Area sensor</div>
+      <input type="text" id="fgen-area" class="fgen-inp" placeholder="e.g. B3 PET CT CS AHU Temp Humidity Co2 Sensor Belimo P-22RT" oninput="generateFormulas()">
+      <div style="font-size:13px;font-weight:500;color:var(--txt);margin:10px 0 4px">Supply duct sensor</div>
+      <input type="text" id="fgen-sup" class="fgen-inp" placeholder="e.g. B3 PET CT AHU Supply Sensor" oninput="generateFormulas()">
+      <div style="font-size:13px;font-weight:500;color:var(--txt);margin:10px 0 4px">Return duct sensor</div>
+      <input type="text" id="fgen-ret" class="fgen-inp" placeholder="e.g. B3 PET CT AHU Return Sensor" oninput="generateFormulas()">
+      <div id="fgen-output" style="margin-top:12px"></div>
+    </div>
+  </div>
 </div>
 
 </div><!-- /main-layout -->
@@ -530,43 +588,57 @@ const NS='http://www.w3.org/2000/svg';
 const SVG=document.getElementById('psychro-chart');
 const M={top:16,right:24,bottom:42,left:52};
 const VW=700,VH=420,CW=VW-M.left-M.right,CH=VH-M.top-M.bottom;
-const T0=5,T1=42,W0=0,W1=25;
-const tx=t=>M.left+(t-T0)/(T1-T0)*CW;
-const wy=w=>M.top+CH-Math.min(Math.max(w-W0,0),W1)/(W1-W0)*CH;
+const TMIN=5,TMAX=42,WMIN=0,WMAX=25;
+let vw={T0:TMIN,T1:TMAX,W0:WMIN,W1:WMAX};
+const tx=t=>M.left+(t-vw.T0)/(vw.T1-vw.T0)*CW;
+const wy=w=>M.top+CH-(w-vw.W0)/(vw.W1-vw.W0)*CH;
+const invTx=sx=>vw.T0+(sx-M.left)/CW*(vw.T1-vw.T0);
+const invWy=sy=>vw.W0+(M.top+CH-sy)/CH*(vw.W1-vw.W0);
+const clientToData=e=>{const r=SVG.getBoundingClientRect();return{t:invTx((e.clientX-r.left)/r.width*VW),w:invWy((e.clientY-r.top)/r.height*VH)};};
+function niceStep(lo,hi,target){const range=hi-lo,raw=range/target,mag=Math.pow(10,Math.floor(Math.log10(raw)));for(const m of[1,2,2.5,5,10]){if(m*mag>=raw-1e-9)return m*mag;}return 10*mag;}
 const mkEl=(tag,a,txt)=>{const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);if(txt!==undefined)e.textContent=txt;return e;};
 
 function drawBase(){
   SVG.innerHTML='';
   const defs=mkEl('defs',{});
+  // Clip path for chart area
+  const cp=mkEl('clipPath',{id:'chart-clip'});
+  cp.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH}));
+  defs.appendChild(cp);
   const mkArr=(id,color)=>{const m=mkEl('marker',{id,markerWidth:'8',markerHeight:'6',refX:'8',refY:'3',orient:'auto'});m.appendChild(mkEl('polygon',{points:'0 0,8 3,0 6',fill:color}));defs.appendChild(m);};
   mkArr('arr-cyan','#30e8d8');mkArr('arr-orange','#ff8c30');mkArr('arr-blue','#5aabff');mkArr('arr-red','#f04848');mkArr('arr-purple','#6a38a8');
   SVG.appendChild(defs);
   SVG.appendChild(mkEl('rect',{x:0,y:0,width:VW,height:VH,fill:'#f0f2f0'}));
   SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'#f8faf8'}));
-  for(let w=0;w<=W1;w+=2){const y=wy(w);SVG.appendChild(mkEl('line',{x1:M.left,y1:y,x2:M.left+CW,y2:y,stroke:'#d8e0d8','stroke-width':.7}));SVG.appendChild(mkEl('text',{x:M.left-5,y:y+3.5,'text-anchor':'end',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(w)));}
-  for(let t=5;t<=T1;t+=5){const x=tx(t);SVG.appendChild(mkEl('line',{x1:x,y1:M.top,x2:x,y2:M.top+CH,stroke:'#d8e0d8','stroke-width':.7}));SVG.appendChild(mkEl('text',{x,y:M.top+CH+13,'text-anchor':'middle',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},String(t)));}
+  // Clipped group: all chart content stays inside chart borders
+  const chartG=mkEl('g',{'clip-path':'url(#chart-clip)'});
+  {const wStep=niceStep(vw.W0,vw.W1,7);const wStart=Math.ceil(vw.W0/wStep)*wStep;
+  for(let w=wStart;w<=vw.W1+wStep*.01;w=Math.round((w+wStep)*1e6)/1e6){
+    const y=wy(w);if(y<M.top-1||y>M.top+CH+1)continue;
+    chartG.appendChild(mkEl('line',{x1:M.left,y1:y,x2:M.left+CW,y2:y,stroke:'#d8e0d8','stroke-width':.7}));
+    SVG.appendChild(mkEl('text',{x:M.left-5,y:y+3.5,'text-anchor':'end',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},wStep<1?w.toFixed(1):String(Math.round(w))));
+  }}
+  {const tStep=niceStep(vw.T0,vw.T1,8);const tStart=Math.ceil(vw.T0/tStep)*tStep;
+  for(let t=tStart;t<=vw.T1+tStep*.01;t=Math.round((t+tStep)*1e6)/1e6){
+    const x=tx(t);if(x<M.left-1||x>M.left+CW+1)continue;
+    chartG.appendChild(mkEl('line',{x1:x,y1:M.top,x2:x,y2:M.top+CH,stroke:'#d8e0d8','stroke-width':.7}));
+    SVG.appendChild(mkEl('text',{x,y:M.top+CH+13,'text-anchor':'middle',fill:'#607860','font-size':8.5,'font-family':'IBM Plex Mono,monospace'},tStep<1?t.toFixed(1):String(Math.round(t))));
+  }}
   [10,20,30,40,50,60,70,80,90,100].forEach(rh=>{
-    const pts=[];for(let t=T0;t<=T1;t+=.35){const w=Wfn(t,rh);if(w<0||w>W1+.5)continue;pts.push(`${tx(t).toFixed(1)},${wy(Math.min(w,W1)).toFixed(1)}`);}
+    const pts=[];for(let t=vw.T0-.5;t<=vw.T1+.5;t+=.35){
+      const w=Wfn(t,rh);if(w<vw.W0-.5||w>vw.W1+.5)continue;
+      pts.push(`${tx(t).toFixed(1)},${wy(Math.min(Math.max(w,vw.W0),vw.W1)).toFixed(1)}`);
+    }
     if(pts.length<2)return;
-    SVG.appendChild(mkEl('polyline',{points:pts.join(' '),fill:'none',stroke:rh===100?'#b8c8b8':'#d0dcd0','stroke-width':rh%20===0||rh===100?1:.55}));
-    const lW=Wfn(34,rh);if(lW>.2&&lW<W1-.5)SVG.appendChild(mkEl('text',{x:tx(34)+3,y:wy(lW)+3,fill:'#90a890','font-size':8,'font-family':'IBM Plex Mono,monospace'},rh+'%'));
+    chartG.appendChild(mkEl('polyline',{points:pts.join(' '),fill:'none',stroke:rh===100?'#b8c8b8':'#d0dcd0','stroke-width':rh%20===0||rh===100?1:.55}));
+    const lT=Math.min(vw.T1-1,34);if(lT>vw.T0+1){const lW=Wfn(lT,rh);if(lW>vw.W0+.3&&lW<vw.W1-.3)chartG.appendChild(mkEl('text',{x:tx(lT)+3,y:wy(lW)+3,fill:'#90a890','font-size':8,'font-family':'IBM Plex Mono,monospace'},rh+'%'));}
   });
+  chartG.appendChild(mkEl('g',{id:'og'}));
+  SVG.appendChild(chartG);
+  // Border and titles outside clip so they render on top
   SVG.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH,fill:'none',stroke:'#b8c8b8','stroke-width':1}));
   SVG.appendChild(mkEl('text',{x:M.left+CW/2,y:VH-5,'text-anchor':'middle',fill:'#5a6e5a','font-size':10,'font-family':'IBM Plex Mono,monospace'},'DRY BULB TEMPERATURE (°C)'));
   SVG.appendChild(mkEl('text',{x:11,y:M.top+CH/2,'text-anchor':'middle',fill:'#5a6e5a','font-size':10,'font-family':'IBM Plex Mono,monospace',transform:`rotate(-90,11,${M.top+CH/2})`},'HUMIDITY RATIO W (g/kg dry air)'));
-  // Zoom group — wraps all chart content so zoom/pan transforms everything
-  const zg=mkEl('g',{id:'zoom-g',transform:'translate(0,0) scale(1)'});
-  // Move all children of SVG into zoom group
-  while(SVG.firstChild) zg.appendChild(SVG.firstChild);
-  // Add overlay group inside zoom group
-  zg.appendChild(mkEl('g',{id:'og'}));
-  SVG.appendChild(zg);
-  // Clip path so zoomed content doesn't overflow chart area
-  const clipDef=mkEl('defs',{});
-  const cp=mkEl('clipPath',{id:'chart-clip'});
-  cp.appendChild(mkEl('rect',{x:M.left,y:M.top,width:CW,height:CH}));
-  clipDef.appendChild(cp);
-  SVG.insertBefore(clipDef,SVG.firstChild);
 }
 
 // ════════════════════════════════════════════════
@@ -587,13 +659,13 @@ function setMode(m){
   document.getElementById('log-inline-wrapper').style.display=m===2?'none':'block';
   document.getElementById('sb-ts-wrap').style.display=m==='ts'?'flex':'none';
   if(m==='ts'){ resizeTs(); if(tsData) drawTs(); }
-  else{ if(m===1){document.getElementById('pane-guidance').className='tab-pane active';document.getElementById('pane-diagnostics').className='tab-pane';document.getElementById('pane-log').className='tab-pane';} syncLog(); redraw(); }
+  else{ if(m===1){['diagnostics','design','log','recipe'].forEach(t=>{document.getElementById('pane-'+t).className='tab-pane';});document.getElementById('pane-guidance').className='tab-pane active';} syncLog(); redraw(); }
 }
 
 function switchTab(n){
   activeTab=n;
-  ['guidance','diagnostics','design','log'].forEach(t=>{document.getElementById('pane-'+t).classList.toggle('active',t===n);});
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['guidance','diagnostics','design','log'][i]===n));
+  ['guidance','diagnostics','design','log','recipe'].forEach(t=>{document.getElementById('pane-'+t).classList.toggle('active',t===n);});
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['guidance','diagnostics','design','log','recipe'][i]===n));
 }
 
 // ════════════════════════════════════════════════
@@ -705,7 +777,7 @@ function calc(){
   if(dW>tolW/2){wc.className='mcard mr';cc.className='cmp-num vr';we.innerHTML=`Room holds <strong>${cW.toFixed(2)} g/kg</strong> — target is <strong>${sW.toFixed(2)} g/kg</strong> (acceptable up to ${spWhi.toFixed(2)} g/kg with ±${tolRH}% tolerance). Must remove <strong>${dW.toFixed(2)} g/kg</strong> per kg of dry air.`;}
   else if(dW<-tolW/2){wc.className='mcard mb';cc.className='cmp-num vb';we.innerHTML=`Room W (${cW.toFixed(2)}) is below target (${sW.toFixed(2)}), within the ±${tolRH}% tolerance band. Air is dry enough — focus on temperature.`;}
   else{wc.className='mcard mg';cc.className='cmp-num vb';we.innerHTML=`Humidity ratio is within the tolerance band. Room W (${cW.toFixed(2)} g/kg) is within ±${tolRH}% of target (acceptable: ${spWlo.toFixed(2)}–${spWhi.toFixed(2)} g/kg). Focus on temperature.`;}
-  updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); if(mode===2) updateDesign(); redraw();
+  updateSB(); updateDec(); if(mode===2&&ss) updateDiag(); if(mode===2) updateDesign(); updateRecipe(); buildWMatrix(); redraw();
 }
 
 // ════════════════════════════════════════════════
@@ -802,6 +874,193 @@ function buildDehumidActions(valve,fan,valveFull,valveNearFull,fanLow,chwCanDrop
   acts.push(`Keep heater at 0% - heating moist air adds sensible energy without removing moisture, wasting energy`);
   acts.push(`After each adjustment wait 5-10 minutes for conditions to stabilise, then re-read and log. Target: Projected RH at ${spT} degrees should fall toward ${cs?cs.spRH:55}%`);
   return acts;
+}
+// ════════════════════════════════════════════════
+// RECIPE GENERATOR
+// ════════════════════════════════════════════════
+function updateRecipe(){
+  const pane=document.getElementById('recipe-output');
+  if(!cs){pane.innerHTML='<div class="dblk di"><div class="dtag ti">Waiting</div><div class="dtitle">Enter values and click Calculate to generate a control recipe</div><div class="dtext">The recipe will show a stage-by-stage AHU control sequence with specific W thresholds, valve/fan targets, and exit conditions derived from your psychrometric analysis.</div></div>';generateFormulas();return;}
+  const{currW,spW,spWhi,spWlo,spT,spRH,dW,dT,tolT,tolRH,tolW}=cs;
+  const valve=parseInt(document.getElementById('valve').value);
+  const fan=parseInt(document.getElementById('fan').value);
+  const heater=parseInt(document.getElementById('heater').value);
+  const chw=ss||{};
+  const alt=parseFloat(document.getElementById('site-alt').value)||0;
+  const s1Exit=spWhi.toFixed(2);
+  const tLo=(spT-tolT).toFixed(1),tHi=(spT+tolT).toFixed(1);
+  const dehumidNeeded=dW>tolW/2+0.05,heatNeeded=dT>tolT;
+  const stratLabel=dehumidNeeded?'Humidity-Primary \u2192 Temperature':heatNeeded?'Temperature-Primary (Moisture Within Band)':'Holding at Setpoint';
+  const ts=new Date().toLocaleString('en-IN',{hour12:false,hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short',year:'numeric'});
+  // ── Plain text for clipboard
+  const L=[];
+  const ln=s=>L.push(s);
+  ln('\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550');
+  ln('AHU CONTROL RECIPE \u2014 Smart Joules AHU Psychro Navigator');
+  ln(`Generated : ${ts}`);
+  ln(`Setpoint  : ${spT}\u00b0C / ${spRH}% RH  \u00b1${tolT}\u00b0C / ${tolRH}%`);
+  ln(`Strategy  : ${stratLabel}`);
+  ln(`Target W  : \u2264 ${s1Exit} g/kg  (nominal ${spW.toFixed(2)}, band ${spWlo.toFixed(2)}\u2013${s1Exit} g/kg)`);
+  ln(`Altitude  : ${alt} m`);
+  ln('\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550');
+  ln('');
+  ln('STAGE 1 \u2014 DEHUMIDIFICATION');
+  ln(`  Trigger : Room W > ${s1Exit} g/kg  [current: ${currW.toFixed(2)} g/kg, remove ${dW.toFixed(2)} g/kg]`);
+  let ni=1;
+  if(chw.chwCanDrop&&chw.chwCur!=null){ln(`  ${ni++}. Lower CHW setpoint: ${chw.chwCur}\u00b0C \u2192 ${chw.chwMin}\u00b0C (${chw.chwMargin.toFixed(1)}\u00b0C headroom)`);ln(`  ${ni++}. Open cooling valve \u2192 100%  [currently ${valve}%]`);}
+  else{ln(`  ${ni++}. Open cooling valve \u2192 100%  [currently ${valve}%]`);if(chw.hasChw)ln(`     Note: CHW already at minimum (${chw.chwCur}\u00b0C)`);else ln(`     Note: Add CHW values in inputs for chiller setpoint guidance`);}
+  if(fan>50){const fr=Math.max(30,fan-20);ln(`  ${ni++}. Reduce fan speed: ${fan}% \u2192 ${fr}%  (longer coil contact, more condensation)`);}
+  ln(`  ${ni++}. Heater: OFF (0%)`);
+  if(chw.hasOA&&chw.oaHurts)ln(`  ${ni++}. Hold OA at ventilation minimum  [OA W=${chw.oaW.toFixed(2)} g/kg > target ${s1Exit} g/kg]`);
+  else if(chw.hasOA&&chw.oaHelpsDehumid)ln(`  Opt. Increase OA damper  [OA W=${chw.oaW.toFixed(2)} g/kg < room, assists dehumid]`);
+  ln(`  Exit    : Room W \u2264 ${s1Exit} g/kg  sustained \u2265 5 min \u2192 Stage 2`);
+  ln('');
+  ln('STAGE 2A \u2014 RAISE TEMPERATURE  (Try first)');
+  ln(`  Trigger : Room W \u2264 ${s1Exit} g/kg  AND  T < ${tLo}\u00b0C`);
+  ln(`  1. Close cooling valve in 5% steps from ${valve}%`);
+  ln('  2. Wait 3\u20135 min per step, then re-read T and RH');
+  ln('  \u2713 Good: T rises, W stays constant \u2192 pure sensible \u2192 continue closing valve');
+  ln('  ! Stop: RH rises as T rises \u2192 W increasing \u2192 latent source \u2192 switch to Stage 2B');
+  ln(`  Exit    : T in ${tLo}\u2013${tHi}\u00b0C  AND  W \u2264 ${s1Exit} g/kg \u2192 Stage 3`);
+  ln('');
+  ln('STAGE 2B \u2014 COOLING + REHEAT  (Latent load confirmed)');
+  ln('  Trigger : Only after Stage 2A shows W rising as valve closes');
+  ln(`  1. Reopen cooling valve to hold W \u2264 ${s1Exit} g/kg`);
+  ln(`  2. Step heater up in 10% increments from ${heater}% (max 100%)`);
+  ln('  3. Wait 5\u201310 min between heater steps');
+  ln('  4. Heater = sensible only \u2192 T rises, W constant, RH falls');
+  ln('  \u26a0 Most energy-intensive \u2014 confirm latent load before using');
+  ln(`  Exit    : T in ${tLo}\u2013${tHi}\u00b0C  AND  W \u2264 ${s1Exit} g/kg \u2192 Stage 3`);
+  ln('');
+  ln('STAGE 3 \u2014 HOLD AT SETPOINT');
+  ln(`  Condition: T in ${tLo}\u2013${tHi}\u00b0C  AND  W in ${spWlo.toFixed(2)}\u2013${s1Exit} g/kg`);
+  ln('  \u2022 Maintain current valve and fan positions');
+  ln('  \u2022 Modulate heater to hold T in band');
+  ln(`  \u2022 Check W every 5 min \u2014 if W > ${s1Exit} g/kg return to Stage 1`);
+  ln(`  \u2022 If T > ${tHi}\u00b0C: reduce heater first, then open valve slightly`);
+  ln('');
+  ln('\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550');
+  ln('Generated by AHU Psychro Navigator v1.2.0 | Smart Joules Application Engineering');
+  window._recipeText=L.join('\n');
+  // ── HTML
+  let h='';
+  h+=`<div class="dblk di" style="margin-bottom:10px"><div class="dtag ti">AHU Control Recipe</div><div class="dtitle" style="margin-bottom:8px">${stratLabel}</div><div class="rcp-meta"><span class="rcp-meta-k">Setpoint</span><span class="rcp-meta-v">${spT}\u00b0C / ${spRH}% RH &nbsp;\u00b1${tolT}\u00b0C / ${tolRH}%</span><span class="rcp-meta-k">Target W</span><span class="rcp-meta-v"><code>\u2264 ${s1Exit} g/kg</code>&emsp;band ${spWlo.toFixed(2)}\u2013${s1Exit} g/kg</span><span class="rcp-meta-k">Altitude</span><span class="rcp-meta-v">${alt} m</span></div></div>`;
+  // Stage 1
+  const s1a=[];
+  if(chw.chwCanDrop&&chw.chwCur!=null){s1a.push(`Lower chiller setpoint <strong>${chw.chwCur}\u00b0C \u2192 ${chw.chwMin}\u00b0C</strong> (${chw.chwMargin.toFixed(1)}\u00b0C headroom available)`);s1a.push(`Open cooling valve to <strong>100%</strong> (currently ${valve}%)`);}
+  else{s1a.push(`Open cooling valve to <strong>100%</strong> (currently ${valve}%)`);if(chw.hasChw)s1a.push(`Chiller already at minimum (${chw.chwCur}\u00b0C) \u2014 valve is the only lever`);else s1a.push(`Add CHW values in inputs for chiller setpoint guidance`);}
+  if(fan>50){const fr=Math.max(30,fan-20);s1a.push(`Reduce fan speed <strong>${fan}% \u2192 ${fr}%</strong> \u2014 longer coil contact per pass, more moisture condensed`);}
+  s1a.push(`Heater: <strong>OFF (0%)</strong>`);
+  if(chw.hasOA&&chw.oaHurts)s1a.push(`Hold OA at ventilation minimum \u2014 OA W = <strong>${chw.oaW.toFixed(2)} g/kg</strong> is wetter than target; every unit of OA adds latent load`);
+  else if(chw.hasOA&&chw.oaHelpsDehumid)s1a.push(`OA W = <strong>${chw.oaW.toFixed(2)} g/kg</strong> is drier than room \u2014 may increase OA damper to assist dehumidification`);
+  h+=`<div class="dblk da" style="margin-bottom:10px"><div class="dtag ta">Stage 1 \u2014 Dehumidification</div><div class="dtext"><strong>Trigger:</strong> Room W &gt; <code>${s1Exit} g/kg</code>&emsp;(currently <strong>${currW.toFixed(2)} g/kg</strong>, remove <strong>${dW.toFixed(2)} g/kg</strong>)</div><div class="dacts">${s1a.map(a=>`<div class="dact"><span class="darr">\u25b6</span><span>${a}</span></div>`).join('')}</div><div class="dtext" style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:7px"><strong>Exit:</strong> Room W \u2264 <code>${s1Exit} g/kg</code> sustained \u2265 5 min \u2192 Stage 2</div></div>`;
+  // Stage 2A
+  const closeNote=valve>=95?`Close valve in 5% steps (currently ${valve}% = fully open \u2014 closing is correct here to allow T to rise)`:`Close cooling valve in 5% steps from ${valve}%`;
+  h+=`<div class="dblk dw" style="margin-bottom:10px"><div class="dtag tw">Stage 2A \u2014 Raise Temperature &ensp;(Try first)</div><div class="dtext"><strong>Trigger:</strong> Room W \u2264 <code>${s1Exit} g/kg</code> \u2713&ensp;AND&ensp;Room T &lt; <code>${tLo}\u00b0C</code></div><div class="dacts"><div class="dact"><span class="darr">\u25b6</span><span>${closeNote}</span></div><div class="dact"><span class="darr">\u25b6</span><span>Wait <strong>3\u20135 min</strong> per step, then re-read T and RH</span></div><div class="dact"><span class="darr" style="color:var(--green)">\u2713</span><span><strong>Good:</strong> T rises and W stays constant \u2192 pure sensible heating \u2192 continue closing valve</span></div><div class="dact"><span class="darr" style="color:var(--red)">!</span><span><strong>Stop:</strong> RH rises as T rises \u2192 W is increasing \u2192 active latent source confirmed \u2192 switch to Stage 2B</span></div></div><div class="dtext" style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:7px"><strong>Exit:</strong> T in <code>${tLo}\u2013${tHi}\u00b0C</code> AND W \u2264 <code>${s1Exit} g/kg</code> \u2192 Stage 3</div></div>`;
+  // Stage 2B
+  const htrWarn=heater>=80?` \u2014 heater already at ${heater}%, watch for overshoot above ${tHi}\u00b0C`:'';
+  h+=`<div class="dblk da" style="margin-bottom:10px"><div class="dtag ta">Stage 2B \u2014 Cooling + Reheat &ensp;(Latent load confirmed)</div><div class="dtext"><strong>Trigger:</strong> Only after Stage 2A shows W rising as valve closes</div><div class="dacts"><div class="dact"><span class="darr">\u25b6</span><span>Reopen cooling valve to hold W \u2264 <code>${s1Exit} g/kg</code> \u2014 coil must keep removing moisture</span></div><div class="dact"><span class="darr">\u25b6</span><span>Step heater up in <strong>10% increments</strong> from ${heater}% \u2014 heater = sensible only: T rises, W stays constant, RH falls${htrWarn}</span></div><div class="dact"><span class="darr">\u25b6</span><span>Wait <strong>5\u201310 min</strong> between heater steps before re-reading</span></div><div class="dact"><span class="darr" style="color:var(--amber)">\u26a0</span><span>Most energy-intensive strategy \u2014 confirm latent load via Stage 2A before using</span></div></div><div class="dtext" style="margin-top:8px;border-top:1px solid var(--bdr);padding-top:7px"><strong>Exit:</strong> T in <code>${tLo}\u2013${tHi}\u00b0C</code> AND W \u2264 <code>${s1Exit} g/kg</code> \u2192 Stage 3</div></div>`;
+  // Stage 3
+  h+=`<div class="dblk dg" style="margin-bottom:10px"><div class="dtag tg">Stage 3 \u2014 Hold at Setpoint</div><div class="dtext"><strong>Condition:</strong> T in <code>${tLo}\u2013${tHi}\u00b0C</code> AND W in <code>${spWlo.toFixed(2)}\u2013${s1Exit} g/kg</code></div><div class="dacts"><div class="dact"><span class="darr" style="color:var(--green)">\u2713</span><span>Maintain current valve and fan positions</span></div><div class="dact"><span class="darr">\u25b6</span><span>Modulate heater to hold T in band (<code>${tLo}\u2013${tHi}\u00b0C</code>)</span></div><div class="dact"><span class="darr">\u25b6</span><span>Monitor W every 5 min \u2014 if W &gt; <code>${s1Exit} g/kg</code>, return to Stage 1</span></div><div class="dact"><span class="darr" style="color:var(--amber)">\u26a0</span><span>If T drifts above <code>${tHi}\u00b0C</code>: reduce heater first, then open valve slightly if needed</span></div></div></div>`;
+  h+=`<button class="rcp-copy-btn" id="rcp-copy-btn" onclick="copyRecipe()">\u2b07 Copy Recipe as Plain Text</button>`;
+  pane.innerHTML=h;
+  generateFormulas();
+}
+function copyRecipe(){
+  if(!window._recipeText)return;
+  const done=()=>{const b=document.getElementById('rcp-copy-btn');if(b){b.textContent='\u2713 Copied to Clipboard';b.classList.add('copied');setTimeout(()=>{b.textContent='\u2b07 Copy Recipe as Plain Text';b.classList.remove('copied');},2500);}};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(window._recipeText).then(done).catch(()=>{});}
+  else{const t=document.createElement('textarea');t.value=window._recipeText;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);done();}
+}
+
+function buildWFormula(sensorName, patm) {
+  const T = 'Temperature(' + sensorName + ')';
+  const H = 'Humidity(' + sensorName + ')';
+  // Quadratic Psat fit valid 10-24C (covers supply air)
+  // Psat = 0.0031*T*T + 0.0176*T + 0.742  [kPa, error <0.4%]
+  const psat = '( 0.0031 * ' + T + ' * ' + T + ' + 0.0176 * ' + T + ' + 0.742 )';
+  const pw   = '( ' + H + ' / 100 ) * ' + psat;
+  return '( 622 * ' + pw + ' )\n    / ( ' + patm.toFixed(1) + ' - ' + pw + ' )';
+}
+function generateFormulas() {
+  const out = document.getElementById('fgen-output');
+  const patmRow = document.getElementById('fgen-patm-row');
+  if(!out) return;
+  const alt = parseFloat(document.getElementById('site-alt')?.value) || 0;
+  const patm = getPatm();
+  if(patmRow){ patmRow.textContent = 'Site altitude: ' + alt + ' m  →  Patm = ' + patm.toFixed(1) + ' kPa'; patmRow.style.display='block'; }
+  const sensors = [
+    {id:'fgen-area', label:'Wₐᵣᵉₐ  — Area / Room', key:'area'},
+    {id:'fgen-sup',  label:'Wₛᵤₚ  — Supply Duct',     key:'sup'},
+    {id:'fgen-ret',  label:'Wᵣᵉₜ  — Return Duct',     key:'ret'},
+  ];
+  let html = '';
+  let anyFilled = false;
+  sensors.forEach(s => {
+    const name = (document.getElementById(s.id)?.value || '').trim();
+    if(!name) return;
+    anyFilled = true;
+    const formula = buildWFormula(name, patm);
+    window['_fgen_' + s.key] = formula.replace(/\n    /g, ' ');
+    html += '<div class="fgen-block">'
+      + '<div class="fgen-label">' + s.label + '</div>'
+      + '<div class="fgen-formula">' + formula.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>'
+      + '<button class="fgen-copy" id="fgen-copy-' + s.key + '" onclick="copyFormula(\'' + s.key + '\')">⬇ Copy</button>'
+      + '</div>';
+  });
+  out.innerHTML = anyFilled ? html : '<div class="traj-empty" style="font-size:12px">Enter at least one sensor name above to generate its W formula.</div>';
+}
+function toggleWMat(){
+  const body=document.getElementById('wmat-body');
+  const caret=document.getElementById('wmat-caret');
+  const open=body.classList.toggle('on');
+  caret.classList.toggle('open',open);
+  if(open) buildWMatrix();
+}
+function buildWMatrix(){
+  const el=document.getElementById('wmat-table');
+  if(!el||!document.getElementById('wmat-body').classList.contains('on'))return;
+  const patm=getPatm();
+  const RHs=[40,45,50,55,60];
+  const Ts=[];for(let t=15;t<=25;t++)Ts.push(t);
+  // Get current state for highlights
+  const spT=cs?cs.spT:parseFloat(document.getElementById('sp-t').value)||20;
+  const spRH=cs?cs.spRH:parseFloat(document.getElementById('sp-rh').value)||55;
+  const spWhi=cs?cs.spWhi:null;
+  const spWlo=cs?cs.spWlo:null;
+  const currT=cs?Math.round(cs.currT):null;
+  const currRH=cs?Math.round(cs.currRH/5)*5:null;
+  const spTr=Math.round(spT);
+  const spRHc=Math.round(spRH/5)*5;
+  let h='<table class="wmat"><thead><tr><th>T°C \ RH%</th>';
+  RHs.forEach(rh=>{h+=`<th class="wmat-th-rh">${rh}</th>`;});
+  h+='</tr></thead><tbody>';
+  Ts.forEach(t=>{
+    h+=`<tr><td class="wmat-t">${t}</td>`;
+    RHs.forEach(rh=>{
+      const w=Wfn(t,rh,patm);
+      const isRoom=currT!==null&&t===currT&&rh===currRH;
+      const isSP=t===spTr&&rh===spRHc;
+      const inBand=spWhi!=null&&spWlo!=null&&w>=spWlo&&w<=spWhi;
+      let cls=isRoom?'wmat-room':isSP?'wmat-sp':inBand?'wmat-band':'';
+      h+=`<td${cls?` class="${cls}"`:''} title="T=${t}°C RH=${rh}% → W=${w.toFixed(2)} g/kg">${w.toFixed(2)}</td>`;
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  el.innerHTML=h;
+}
+
+function copyFormula(key) {
+  const text = window['_fgen_' + key];
+  if(!text) return;
+  const done = () => {
+    const b = document.getElementById('fgen-copy-' + key);
+    if(b){ b.textContent = '✓ Copied'; b.classList.add('copied');
+      setTimeout(() => { b.textContent = '⬇ Copy'; b.classList.remove('copied'); }, 2000); }
+  };
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text).then(done).catch(()=>{}); }
+  else{ const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);done(); }
 }
 // ════════════════════════════════════════════════
 // DESIGN BASIS vs ACTUAL (mode 2)
@@ -1090,15 +1349,16 @@ function updateDiag(){
 function redraw(){
   const old=document.getElementById('og');if(old)old.remove();
   const g=mkEl('g',{id:'og'});
-  if(!cs){SVG.appendChild(g);return;}
+  const chartG=document.getElementById('og')?.parentNode||SVG;
+  if(!cs){chartG.appendChild(g);return;}
   const{currT,currW,spT,spW}=cs;
-  if(currW>=W0&&currW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(currW),x2:M.left+CW,y2:wy(currW),stroke:'#5aabff','stroke-width':1,'stroke-dasharray':'5,3',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(currW)-4,'text-anchor':'end',fill:'#1a6abf','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},currW.toFixed(1)));}
-  if(spW>=W0&&spW<=W1){g.appendChild(mkEl('line',{x1:M.left,y1:wy(spW),x2:M.left+CW,y2:wy(spW),stroke:'#40d870','stroke-width':1,'stroke-dasharray':'4,2',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(spW)-4,'text-anchor':'end',fill:'#1a7a40','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},spW.toFixed(1)));}
+  if(currW>=WMIN&&currW<=WMAX){g.appendChild(mkEl('line',{x1:M.left,y1:wy(currW),x2:M.left+CW,y2:wy(currW),stroke:'#5aabff','stroke-width':1,'stroke-dasharray':'5,3',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(currW)-4,'text-anchor':'end',fill:'#1a6abf','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},currW.toFixed(1)));}
+  if(spW>=WMIN&&spW<=WMAX){g.appendChild(mkEl('line',{x1:M.left,y1:wy(spW),x2:M.left+CW,y2:wy(spW),stroke:'#40d870','stroke-width':1,'stroke-dasharray':'4,2',opacity:.5}));g.appendChild(mkEl('text',{x:M.left-4,y:wy(spW)-4,'text-anchor':'end',fill:'#1a7a40','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.8},spW.toFixed(1)));}
   g.appendChild(mkEl('line',{x1:tx(spT),y1:M.top,x2:tx(spT),y2:M.top+CH,stroke:'#40d870','stroke-width':.8,'stroke-dasharray':'2,4',opacity:.22}));
   if(Math.abs(currW-spW)>.1){const y1=wy(Math.max(currW,spW)),y2=wy(Math.min(currW,spW));g.appendChild(mkEl('rect',{x:M.left,y:y1,width:CW,height:y2-y1,fill:currW>spW?'rgba(240,72,72,.05)':'rgba(64,216,112,.05)'}));}
   if(mode===2&&ss){
     const{supT,supW,retT,retW,hasReturn}=ss;
-    const inB=(t,w)=>t>=T0&&t<=T1&&w>=W0&&w<=W1;
+    const inB=(t,w)=>t>=TMIN&&t<=TMAX&&w>=WMIN&&w<=WMAX;
     if(hasReturn&&inB(retT,retW)&&inB(retT,supW)){
       g.appendChild(mkEl('line',{x1:tx(retT).toFixed(1),y1:wy(retW).toFixed(1),x2:tx(retT).toFixed(1),y2:wy(supW).toFixed(1),stroke:'#5aabff','stroke-width':2,opacity:.7,'marker-end':'url(#arr-blue)'}));
       g.appendChild(mkEl('circle',{cx:tx(retT),cy:wy(supW),r:4.5,fill:'none',stroke:'#5aabff','stroke-width':1.5,'stroke-dasharray':'3,2',opacity:.8}));
@@ -1109,27 +1369,27 @@ function redraw(){
   }
   if(traj.length>1){const pts=traj.map(s=>`${tx(s.t).toFixed(1)},${wy(s.w).toFixed(1)}`).join(' ');g.appendChild(mkEl('polyline',{points:pts,fill:'none',stroke:'#f0b030','stroke-width':2,opacity:.65,'stroke-linejoin':'round'}));}
   traj.forEach((s,i)=>{const cx=tx(s.t),cy=wy(s.w),isSel=i===sel;if(isSel)g.appendChild(mkEl('circle',{cx,cy,r:'9',fill:'none',stroke:'#f0b030','stroke-width':'2',class:'pr'}));g.appendChild(mkEl('circle',{cx,cy,r:isSel?6.5:5.5,fill:'#f0b030',stroke:isSel?'#fff':'#806010','stroke-width':isSel?1.5:1}));g.appendChild(mkEl('text',{x:cx+9,y:cy-5,fill:isSel?'#f0b030':'#806010','font-size':9.5,'font-family':'IBM Plex Mono,monospace','font-weight':isSel?'500':'400'},String(i+1)));});
-  if(spT>=T0&&spT<=T1&&currW>=W0&&currW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(currW),r:5.5,fill:'none',stroke:'#b088ff','stroke-width':1.8,'stroke-dasharray':'3,2',opacity:.85}));g.appendChild(mkEl('text',{x:tx(spT)+9,y:wy(currW)-4,fill:'#5830a8','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.9},pRHfn(spT,currW).toFixed(0)+'%?'));}
+  if(spT>=TMIN&&spT<=TMAX&&currW>=WMIN&&currW<=WMAX){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(currW),r:5.5,fill:'none',stroke:'#b088ff','stroke-width':1.8,'stroke-dasharray':'3,2',opacity:.85}));g.appendChild(mkEl('text',{x:tx(spT)+9,y:wy(currW)-4,fill:'#5830a8','font-size':9,'font-family':'IBM Plex Mono,monospace',opacity:.9},pRHfn(spT,currW).toFixed(0)+'%?'));}
   // ADP point (design basis)
   if(cs.db&&cs.db.dbAdp!=null){
     const adpT=cs.db.dbAdp;
     const adpW=Wfn(adpT,100,getPatm());
-    if(adpT>=T0&&adpT<=T1&&adpW>=W0&&adpW<=W1){
+    if(adpT>=TMIN&&adpT<=TMAX&&adpW>=WMIN&&adpW<=WMAX){
       const ax=tx(adpT),ay=wy(adpW);
       g.appendChild(mkEl('polygon',{points:`${ax},${ay-8} ${ax+7},${ay} ${ax},${ay+8} ${ax-7},${ay}`,fill:'#6a38a8',opacity:'0.85'}));
       g.appendChild(mkEl('text',{x:ax+10,y:ay+4,fill:'#6a38a8','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:'0.9'},'ADP'));
       // Contact factor line from entering air to ADP
       const enterW=ss&&ss.retW?ss.retW:cs.currW;
       const enterT=ss&&ss.retT?ss.retT:cs.currT;
-      if(enterT>=T0&&enterT<=T1&&enterW>=W0&&enterW<=W1){
+      if(enterT>=TMIN&&enterT<=TMAX&&enterW>=WMIN&&enterW<=WMAX){
         g.appendChild(mkEl('line',{x1:tx(enterT).toFixed(1),y1:wy(enterW).toFixed(1),x2:ax.toFixed(1),y2:ay.toFixed(1),stroke:'#6a38a8','stroke-width':1.5,'stroke-dasharray':'5,3',opacity:'0.5','marker-end':'url(#arr-purple)'}));
       }
     }
   }
-  if(spT>=T0&&spT<=T1&&spW>=W0&&spW<=W1){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:10,fill:'#40d870',opacity:.11}));g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:6,fill:'#40d870'}));g.appendChild(mkEl('text',{x:tx(spT)+10,y:wy(spW)-7,fill:'#1a7a40','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`SP:${spT}°/${cs.spRH}%`));}
-  const ccx=tx(currT),ccy=wy(Math.min(currW,W1));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:10,fill:'#5aabff',opacity:.1}));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:6,fill:'#5aabff'}));g.appendChild(mkEl('text',{x:ccx+10,y:ccy-7,fill:'#1a6abf','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`${cs.currT}°/${cs.currRH}%`));
+  if(spT>=TMIN&&spT<=TMAX&&spW>=WMIN&&spW<=WMAX){g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:10,fill:'#40d870',opacity:.11}));g.appendChild(mkEl('circle',{cx:tx(spT),cy:wy(spW),r:6,fill:'#40d870'}));g.appendChild(mkEl('text',{x:tx(spT)+10,y:wy(spW)-7,fill:'#1a7a40','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`SP:${spT}°/${cs.spRH}%`));}
+  const ccx=tx(currT),ccy=wy(Math.min(currW,WMAX));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:10,fill:'#5aabff',opacity:.1}));g.appendChild(mkEl('circle',{cx:ccx,cy:ccy,r:6,fill:'#5aabff'}));g.appendChild(mkEl('text',{x:ccx+10,y:ccy-7,fill:'#1a6abf','font-size':9.5,'font-family':'IBM Plex Mono,monospace',opacity:.95},`${cs.currT}°/${cs.currRH}%`));
   if(sel!==null&&traj[sel]){const s=traj[sel],bx=tx(s.t),by=wy(s.w),bw=148,bh=56;let lx=bx+14;if(lx+bw>M.left+CW)lx=bx-bw-14;let ly=by-14;if(ly+bh>M.top+CH)ly=by-bh-14;g.appendChild(mkEl('rect',{x:lx,y:ly,width:bw,height:bh,fill:'#ffffff',stroke:'#b86800','stroke-width':1,rx:2}));g.appendChild(mkEl('text',{x:lx+8,y:ly+15,fill:'#b86800','font-size':10,'font-family':'IBM Plex Mono,monospace','font-weight':'500'},`#${sel+1}  ${s.t}°C / ${s.rh}% RH`));g.appendChild(mkEl('text',{x:lx+8,y:ly+28,fill:'#404840','font-size':9,'font-family':'IBM Plex Mono,monospace'},`W=${s.w.toFixed(2)}  ProjRH=${s.projRH.toFixed(1)}%`));g.appendChild(mkEl('text',{x:lx+8,y:ly+41,fill:'#7a887a','font-size':8,'font-family':'IBM Plex Mono,monospace'},`V:${s.valve}% Fan:${s.fan}% Heat:${s.heater}%`));}
-  SVG.appendChild(g);
+  (document.querySelector('[clip-path="url(#chart-clip)"]')||SVG).appendChild(g);
 }
 
 // ════════════════════════════════════════════════
@@ -1741,117 +2001,109 @@ document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('k
 document.getElementById('log-btn').addEventListener('click',logState);
 document.getElementById('clr-btn').addEventListener('click',()=>{traj=[];sel=null;syncLog();updateSB();redraw();});
 window.addEventListener('resize',()=>{if(mode==='ts'){resizeTs();drawTs();}});
+document.getElementById('site-alt').addEventListener('input',()=>{generateFormulas();buildWMatrix();});
+generateFormulas();buildWMatrix();
 
 // ════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════
 // ════════════════════════════════════════════════
-// CHART ZOOM & PAN
+// CHART ZOOM & PAN (data-space)
 // ════════════════════════════════════════════════
-let zoomState={scale:1,tx:0,ty:0};
-let isPanning=false, panStart={x:0,y:0};
+let isPanning=false, panStartVw=null, panStartPx=null;
+let lastTouchDist=null, rafPending=false;
 
-function applyZoom(){
-  const zg=document.getElementById('zoom-g');
-  if(!zg)return;
-  zg.setAttribute('transform',`translate(${zoomState.tx},${zoomState.ty}) scale(${zoomState.scale})`);
-  // Show reset button only when zoomed/panned
-  const btn=document.getElementById('chart-reset-btn');
-  if(btn) btn.style.display=(zoomState.scale!==1||zoomState.tx!==0||zoomState.ty!==0)?'block':'none';
+function scheduleChartRedraw(){if(rafPending)return;rafPending=true;requestAnimationFrame(()=>{rafPending=false;drawBase();redraw();});}
+
+function clampVw(){
+  const tr=vw.T1-vw.T0,wr=vw.W1-vw.W0;
+  vw.T0=Math.max(TMIN,Math.min(TMAX-tr,vw.T0));vw.T1=vw.T0+tr;
+  vw.W0=Math.max(WMIN,Math.min(WMAX-wr,vw.W0));vw.W1=vw.W0+wr;
 }
+
+function isDefaultVw(){return vw.T0===TMIN&&vw.T1===TMAX&&vw.W0===WMIN&&vw.W1===WMAX;}
+function showResetBtn(){const b=document.getElementById('chart-reset-btn');if(b)b.style.display=isDefaultVw()?'none':'block';}
 
 function resetZoom(){
-  zoomState={scale:1,tx:0,ty:0};
-  applyZoom();
-}
-
-function getSVGPoint(evt){
-  const rect=SVG.getBoundingClientRect();
-  // SVG coordinate from client coordinate
-  const svgW=VW, svgH=VH;
-  const scaleX=svgW/rect.width, scaleY=svgH/rect.height;
-  return {
-    x:(evt.clientX-rect.left)*scaleX,
-    y:(evt.clientY-rect.top)*scaleY
-  };
+  vw={T0:TMIN,T1:TMAX,W0:WMIN,W1:WMAX};
+  showResetBtn();
+  drawBase();redraw();
 }
 
 SVG.addEventListener('wheel',function(e){
   e.preventDefault();
-  const pt=getSVGPoint(e);
-  const delta=e.deltaY<0?1.18:1/1.18;
-  const newScale=Math.max(0.9,Math.min(12,zoomState.scale*delta));
-  // Zoom centered on cursor: adjust tx,ty so cursor stays fixed
-  zoomState.tx=pt.x - (pt.x - zoomState.tx)*(newScale/zoomState.scale);
-  zoomState.ty=pt.y - (pt.y - zoomState.ty)*(newScale/zoomState.scale);
-  zoomState.scale=newScale;
-  applyZoom();
+  const r=SVG.getBoundingClientRect();
+  const sx=(e.clientX-r.left)/r.width*VW,sy=(e.clientY-r.top)/r.height*VH;
+  const pivT=invTx(sx),pivW=invWy(sy);
+  const factor=e.deltaY<0?0.75:1/0.75;
+  const tr=Math.max(2,Math.min(TMAX-TMIN,(vw.T1-vw.T0)*factor));
+  const wr=Math.max(1,Math.min(WMAX-WMIN,(vw.W1-vw.W0)*factor));
+  const tRatio=(pivT-vw.T0)/(vw.T1-vw.T0),wRatio=(pivW-vw.W0)/(vw.W1-vw.W0);
+  vw.T0=pivT-tRatio*tr;vw.T1=vw.T0+tr;
+  vw.W0=pivW-wRatio*wr;vw.W1=vw.W0+wr;
+  clampVw();showResetBtn();scheduleChartRedraw();
 },{passive:false});
 
 SVG.addEventListener('mousedown',function(e){
   if(e.button!==0)return;
-  isPanning=true;
-  const pt=getSVGPoint(e);
-  panStart={x:pt.x-zoomState.tx, y:pt.y-zoomState.ty};
-  SVG.style.cursor='grabbing';
-  e.preventDefault();
+  isPanning=true;panStartVw={...vw};panStartPx={x:e.clientX,y:e.clientY};
+  SVG.style.cursor='grabbing';e.preventDefault();
 });
 
 window.addEventListener('mousemove',function(e){
   if(!isPanning)return;
-  const pt=getSVGPoint(e);
-  zoomState.tx=pt.x-panStart.x;
-  zoomState.ty=pt.y-panStart.y;
-  applyZoom();
+  const r=SVG.getBoundingClientRect();
+  const dt=-(e.clientX-panStartPx.x)/r.width*VW/CW*(panStartVw.T1-panStartVw.T0);
+  const dw=(e.clientY-panStartPx.y)/r.height*VH/CH*(panStartVw.W1-panStartVw.W0);
+  const tr=panStartVw.T1-panStartVw.T0,wr=panStartVw.W1-panStartVw.W0;
+  vw.T0=Math.max(TMIN,Math.min(TMAX-tr,panStartVw.T0+dt));vw.T1=vw.T0+tr;
+  vw.W0=Math.max(WMIN,Math.min(WMAX-wr,panStartVw.W0+dw));vw.W1=vw.W0+wr;
+  showResetBtn();scheduleChartRedraw();
 });
 
 window.addEventListener('mouseup',function(){
   if(isPanning){isPanning=false;SVG.style.cursor='default';}
 });
 
-SVG.addEventListener('dblclick',function(e){
-  e.preventDefault();
-  resetZoom();
-});
+SVG.addEventListener('dblclick',function(e){e.preventDefault();resetZoom();});
 
 // Touch support
-let lastTouchDist=null;
 SVG.addEventListener('touchstart',function(e){
   if(e.touches.length===1){
-    isPanning=true;
-    const t=e.touches[0];
-    const rect=SVG.getBoundingClientRect();
-    const sx=VW/rect.width,sy=VH/rect.height;
-    panStart={x:(t.clientX-rect.left)*sx-zoomState.tx,y:(t.clientY-rect.top)*sy-zoomState.ty};
+    isPanning=true;panStartVw={...vw};
+    panStartPx={x:e.touches[0].clientX,y:e.touches[0].clientY};
   } else if(e.touches.length===2){
-    const dx=e.touches[0].clientX-e.touches[1].clientX;
-    const dy=e.touches[0].clientY-e.touches[1].clientY;
+    isPanning=false;
+    const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;
     lastTouchDist=Math.sqrt(dx*dx+dy*dy);
+    panStartVw={...vw};
   }
   e.preventDefault();
 },{passive:false});
 
 SVG.addEventListener('touchmove',function(e){
-  const rect=SVG.getBoundingClientRect();
-  const sx=VW/rect.width,sy=VH/rect.height;
+  const r=SVG.getBoundingClientRect();
   if(e.touches.length===1&&isPanning){
-    const t=e.touches[0];
-    zoomState.tx=(t.clientX-rect.left)*sx-panStart.x;
-    zoomState.ty=(t.clientY-rect.top)*sy-panStart.y;
-    applyZoom();
-  } else if(e.touches.length===2&&lastTouchDist!==null){
-    const dx=e.touches[0].clientX-e.touches[1].clientX;
-    const dy=e.touches[0].clientY-e.touches[1].clientY;
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    const delta=dist/lastTouchDist;
-    const midX=((e.touches[0].clientX+e.touches[1].clientX)/2-rect.left)*sx;
-    const midY=((e.touches[0].clientY+e.touches[1].clientY)/2-rect.top)*sy;
-    const newScale=Math.max(0.9,Math.min(12,zoomState.scale*delta));
-    zoomState.tx=midX-(midX-zoomState.tx)*(newScale/zoomState.scale);
-    zoomState.ty=midY-(midY-zoomState.ty)*(newScale/zoomState.scale);
-    zoomState.scale=newScale;
+    const dt=-(e.touches[0].clientX-panStartPx.x)/r.width*VW/CW*(panStartVw.T1-panStartVw.T0);
+    const dw=(e.touches[0].clientY-panStartPx.y)/r.height*VH/CH*(panStartVw.W1-panStartVw.W0);
+    const tr=panStartVw.T1-panStartVw.T0,wr=panStartVw.W1-panStartVw.W0;
+    vw.T0=Math.max(TMIN,Math.min(TMAX-tr,panStartVw.T0+dt));vw.T1=vw.T0+tr;
+    vw.W0=Math.max(WMIN,Math.min(WMAX-wr,panStartVw.W0+dw));vw.W1=vw.W0+wr;
+    showResetBtn();scheduleChartRedraw();
+  } else if(e.touches.length===2&&lastTouchDist){
+    const dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;
+    const dist=Math.sqrt(dx*dx+dy*dy),factor=lastTouchDist/dist;
+    const midX=(e.touches[0].clientX+e.touches[1].clientX)/2,midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
+    const sx=(midX-r.left)/r.width*VW,sy=(midY-r.top)/r.height*VH;
+    const pivT=invTx(sx),pivW=invWy(sy);
+    const tr=Math.max(2,Math.min(TMAX-TMIN,(panStartVw.T1-panStartVw.T0)*factor));
+    const wr=Math.max(1,Math.min(WMAX-WMIN,(panStartVw.W1-panStartVw.W0)*factor));
+    const tRatio=(pivT-panStartVw.T0)/(panStartVw.T1-panStartVw.T0);
+    const wRatio=(pivW-panStartVw.W0)/(panStartVw.W1-panStartVw.W0);
+    vw.T0=pivT-tRatio*tr;vw.T1=vw.T0+tr;
+    vw.W0=pivW-wRatio*wr;vw.W1=vw.W0+wr;
+    clampVw();showResetBtn();scheduleChartRedraw();
     lastTouchDist=dist;
-    applyZoom();
   }
   e.preventDefault();
 },{passive:false});
